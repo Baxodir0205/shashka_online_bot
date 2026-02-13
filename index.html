@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shashka Online</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+        body {
+            background: linear-gradient(145deg, #1a4731, #0a2a1a);
+            font-family: 'Segoe UI', Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 15px;
+        }
+        .game-container {
+            max-width: 480px;
+            width: 100%;
+            background: #2c3e50;
+            border-radius: 30px;
+            padding: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+        .header {
+            text-align: center;
+            color: #ffd700;
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 0 0 15px rgba(255,215,0,0.5);
+        }
+        .players {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #34495e;
+            padding: 15px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            color: white;
+        }
+        .player-card {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .avatar {
+            width: 45px;
+            height: 45px;
+            background: #3498db;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        .vs {
+            background: #e74c3c;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-weight: bold;
+        }
+        .board-wrapper {
+            background: #8b5a2b;
+            padding: 15px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+        }
+        .coords {
+            display: flex;
+            justify-content: space-around;
+            color: #ffd700;
+            font-weight: bold;
+            padding: 5px 0;
+        }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 2px;
+            background: #594735;
+            padding: 2px;
+            border-radius: 10px;
+        }
+        .cell {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .cell:hover {
+            transform: scale(1.05);
+        }
+        .dark { background: #8b5a2b; }
+        .light { background: #f0d9b5; }
+        .white-piece { color: white; text-shadow: 0 0 5px black; }
+        .black-piece { color: black; text-shadow: 0 0 5px white; }
+        .selected { box-shadow: inset 0 0 0 4px gold; }
+        .status {
+            background: #34495e;
+            color: white;
+            padding: 15px;
+            border-radius: 50px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        .buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .btn {
+            padding: 15px;
+            border: none;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+        .btn-green { background: #27ae60; }
+        .btn-red { background: #e74c3c; }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #95a5a6;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">🎯 SHAHKA ONLINE</div>
+
+        <div class="players">
+            <div class="player-card">
+                <div class="avatar">👤</div>
+                <div><strong>Siz</strong><br><span style="color:#f1c40f;">⭐ 1240</span></div>
+            </div>
+            <div class="vs">VS</div>
+            <div class="player-card">
+                <div class="avatar">🤖</div>
+                <div><strong>AI Bot</strong><br><span style="color:#2ecc71;">⚡ Daraja 5</span></div>
+            </div>
+        </div>
+
+        <div class="board-wrapper">
+            <div class="coords">
+                <span></span><span>A</span><span>B</span><span>C</span><span>D</span>
+                <span>E</span><span>F</span><span>G</span><span>H</span><span></span>
+            </div>
+            <div id="board" class="board"></div>
+            <div class="coords">
+                <span></span><span>A</span><span>B</span><span>C</span><span>D</span>
+                <span>E</span><span>F</span><span>G</span><span>H</span><span></span>
+            </div>
+        </div>
+
+        <div id="status" class="status">⚪ Sizning navbatingiz</div>
+
+        <div class="buttons">
+            <button class="btn btn-green" onclick="newGame()">🔄 Yangi o'yin</button>
+            <button class="btn btn-red" onclick="resign()">🏳️ Taslim</button>
+        </div>
+
+        <div class="footer">
+            @shashka_gamebot • Web App v1.0
+        </div>
+    </div>
+
+    <script>
+        // Shashka doskasi
+        let board = [
+            [0,2,0,2,0,2,0,2],
+            [2,0,2,0,2,0,2,0],
+            [0,2,0,2,0,2,0,2],
+            [0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0],
+            [1,0,1,0,1,0,1,0],
+            [0,1,0,1,0,1,0,1],
+            [1,0,1,0,1,0,1,0]
+        ];
+
+        let currentPlayer = 1; // 1=oq, 2=qora
+        let selectedRow = -1, selectedCol = -1;
+        let gameOver = false;
+
+        function renderBoard() {
+            let html = '';
+            for(let row = 0; row < 8; row++) {
+                for(let col = 0; col < 8; col++) {
+                    let color = (row + col) % 2 === 0 ? 'light' : 'dark';
+                    let piece = board[row][col];
+                    let symbol = '';
+                    let pieceClass = '';
+
+                    if(piece === 1) { symbol = '⚪'; pieceClass = 'white-piece'; }
+                    if(piece === 2) { symbol = '⚫'; pieceClass = 'black-piece'; }
+                    if(piece === 3) { symbol = '👑⚪'; pieceClass = 'white-piece'; }
+                    if(piece === 4) { symbol = '👑⚫'; pieceClass = 'black-piece'; }
+
+                    let selected = (selectedRow === row && selectedCol === col) ? 'selected' : '';
+
+                    html += `<div class="cell ${color} ${pieceClass} ${selected}"
+                            onclick="cellClick(${row}, ${col})">
+                            ${symbol}
+                            </div>`;
+                }
+            }
+            document.getElementById('board').innerHTML = html;
+        }
+
+        function cellClick(row, col) {
+            if(gameOver || currentPlayer !== 1) return;
+
+            // Tosh tanlash
+            if(selectedRow === -1 && (board[row][col] === 1 || board[row][col] === 3)) {
+                selectedRow = row;
+                selectedCol = col;
+            }
+            // Yurish
+            else if(selectedRow !== -1 && board[row][col] === 0) {
+                // Farzinga aylantirish
+                if(board[selectedRow][selectedCol] === 1 && row === 0) {
+                    board[row][col] = 3;
+                } else {
+                    board[row][col] = board[selectedRow][selectedCol];
+                }
+                board[selectedRow][selectedCol] = 0;
+
+                selectedRow = -1;
+                selectedCol = -1;
+                currentPlayer = 2;
+                document.getElementById('status').innerHTML = '🤖 AI o\'ylamoqda...';
+
+                renderBoard();
+                setTimeout(aiMove, 500);
+            }
+            renderBoard();
+        }
+
+        function aiMove() {
+            if(gameOver) return;
+
+            // AI yurishi
+            let moved = false;
+            for(let row = 0; row < 8; row++) {
+                for(let col = 0; col < 8; col++) {
+                    if(board[row][col] === 2) {
+                        // Pastga yurish
+                        if(row < 7 && col > 0 && board[row+1][col-1] === 0) {
+                            board[row+1][col-1] = 2;
+                            board[row][col] = 0;
+                            moved = true;
+                            break;
+                        }
+                        if(row < 7 && col < 7 && board[row+1][col+1] === 0) {
+                            board[row+1][col+1] = 2;
+                            board[row][col] = 0;
+                            moved = true;
+                            break;
+                        }
+                    }
+                }
+                if(moved) break;
+            }
+
+            currentPlayer = 1;
+            document.getElementById('status').innerHTML = '⚪ Sizning navbatingiz';
+            renderBoard();
+            checkWinner();
+        }
+
+        function checkWinner() {
+            let white = 0, black = 0;
+            for(let row = 0; row < 8; row++) {
+                for(let col = 0; col < 8; col++) {
+                    if(board[row][col] === 1 || board[row][col] === 3) white++;
+                    if(board[row][col] === 2 || board[row][col] === 4) black++;
+                }
+            }
+
+            if(white === 0) {
+                gameOver = true;
+                document.getElementById('status').innerHTML = '🤖 AI yutdi!';
+            }
+            if(black === 0) {
+                gameOver = true;
+                document.getElementById('status').innerHTML = '🎉 Siz yutdingiz!';
+            }
+        }
+
+        function newGame() {
+            board = [
+                [0,2,0,2,0,2,0,2],
+                [2,0,2,0,2,0,2,0],
+                [0,2,0,2,0,2,0,2],
+                [0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0],
+                [1,0,1,0,1,0,1,0],
+                [0,1,0,1,0,1,0,1],
+                [1,0,1,0,1,0,1,0]
+            ];
+            currentPlayer = 1;
+            selectedRow = -1;
+            selectedCol = -1;
+            gameOver = false;
+            document.getElementById('status').innerHTML = '⚪ Sizning navbatingiz';
+            renderBoard();
+        }
+
+        function resign() {
+            gameOver = true;
+            document.getElementById('status').innerHTML = '🏳️ Siz taslim bo\'ldingiz!';
+        }
+
+        renderBoard();
+    </script>
+</body>
+</html>

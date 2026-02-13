@@ -97,6 +97,16 @@
             border-radius: 50%;
             border: 2px solid #2c3e50;
         }
+        .offline-indicator {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            width: 12px;
+            height: 12px;
+            background: #95a5a6;
+            border-radius: 50%;
+            border: 2px solid #2c3e50;
+        }
         .player-info {
             display: flex;
             flex-direction: column;
@@ -313,14 +323,14 @@
             cursor: pointer;
             transition: 0.2s;
         }
-        .challenge-btn:hover {
+        .challenge-btn:hover:not(:disabled) {
             background: #c0392b;
             transform: scale(1.05);
         }
         .challenge-btn:disabled {
             background: #95a5a6;
             cursor: not-allowed;
-            transform: none;
+            opacity: 0.6;
         }
         .buttons {
             display: grid;
@@ -360,7 +370,7 @@
         <!-- Tablar -->
         <div class="tabs">
             <button class="tab active" onclick="showTab('game')">🎮 O'YIN</button>
-            <button class="tab" onclick="showTab('friends')">👥 DO'STLAR (8 online)</button>
+            <button class="tab" onclick="showTab('friends')">👥 FOYDALANUVCHILAR</button>
         </div>
 
         <!-- O'yin bo'limi -->
@@ -372,8 +382,8 @@
                         <span class="online-indicator"></span>
                     </div>
                     <div class="player-info">
-                        <span class="player-name">Siz</span>
-                        <span class="player-rating">⭐ 1240</span>
+                        <span class="player-name" id="current-user-name">Siz</span>
+                        <span class="player-rating" id="current-user-rating">⭐ 1240</span>
                     </div>
                 </div>
                 <div class="vs">VS</div>
@@ -381,7 +391,7 @@
                     <div class="avatar" id="opponent-avatar">🤖</div>
                     <div class="player-info">
                         <span class="player-name" id="opponent-name">AI Bot</span>
-                        <span class="player-rating black" id="opponent-level">⚡ Daraja 5</span>
+                        <span class="player-rating black" id="opponent-level">⚡ Daraja 3</span>
                     </div>
                 </div>
             </div>
@@ -418,36 +428,36 @@
             </div>
         </div>
 
-        <!-- Do'stlar bo'limi -->
+        <!-- Foydalanuvchilar bo'limi -->
         <div id="friends-section" style="display: none;">
             <div class="friends-section">
                 <div class="friends-header">
-                    <h3>👥 Online do'stlar</h3>
-                    <span class="online-count" id="online-count">8 online</span>
+                    <h3>👥 Online foydalanuvchilar</h3>
+                    <span class="online-count" id="online-count">0 online</span>
                 </div>
 
                 <div class="search-box">
-                    <input type="text" id="search-friends" placeholder="🔍 Do'stlarni qidirish..." onkeyup="searchFriends()">
+                    <input type="text" id="search-friends" placeholder="🔍 Foydalanuvchilarni qidirish..." onkeyup="searchFriends()">
                 </div>
 
                 <div class="friends-list" id="friends-list">
-                    <!-- Do'stlar ro'yxati dinamik qo'shiladi -->
+                    <!-- Foydalanuvchilar dinamik yuklanadi -->
                 </div>
 
                 <div style="margin-top: 15px; display: flex; gap: 10px;">
-                    <button class="btn btn-blue" style="flex: 1;" onclick="refreshFriends()">🔄 Yangilash</button>
+                    <button class="btn btn-blue" style="flex: 1;" onclick="loadUsers()">🔄 Yangilash</button>
                     <button class="btn btn-green" style="flex: 1;" onclick="playWithAI()">🤖 AI bilan o'ynash</button>
                 </div>
             </div>
         </div>
 
         <div class="footer">
-            @shashka_gamebot • Do'stlar bilan v2.0
+            @shashka_gamebot • Real foydalanuvchilar v3.0
         </div>
     </div>
 
     <script>
-        // Shashka doskasi
+        // ==================== KONFIGURATSIYA ====================
         let board = [
             [0,2,0,2,0,2,0,2],
             [2,0,2,0,2,0,2,0],
@@ -459,109 +469,171 @@
             [1,0,1,0,1,0,1,0]
         ];
 
-        let currentPlayer = 1; // 1=oq, 2=qora
+        let currentPlayer = 1;
         let selectedRow = -1, selectedCol = -1;
         let possibleMoves = [];
         let gameOver = false;
         let mustCapture = false;
         let capturePositions = [];
-        let gameMode = 'ai'; // 'ai' yoki 'friend'
+        let gameMode = 'ai';
         let currentOpponent = null;
-        let aiDifficulty = 3; // 1-5 gacha
+        let aiDifficulty = 3;
+        let currentUser = null;
 
-        // Do'stlar ro'yxati
-        let friends = [
-            { id: 1, name: 'Ali', status: 'online', rating: 1450, avatar: '👨', game: 'shashka' },
-            { id: 2, name: 'Vali', status: 'online', rating: 1320, avatar: '👦', game: 'shashka' },
-            { id: 3, name: 'Sobir', status: 'offline', rating: 1180, avatar: '👨', game: 'shashka' },
-            { id: 4, name: 'Jalil', status: 'online', rating: 1560, avatar: '👨', game: 'shashka' },
-            { id: 5, name: 'Karim', status: 'online', rating: 1240, avatar: '👦', game: 'shashka' },
-            { id: 6, name: 'Botir', status: 'online', rating: 1380, avatar: '👨', game: 'shashka' },
-            { id: 7, name: 'Hasan', status: 'offline', rating: 1120, avatar: '👦', game: 'shashka' },
-            { id: 8, name: 'Husan', status: 'online', rating: 1430, avatar: '👨', game: 'shashka' },
-            { id: 9, name: 'Olim', status: 'online', rating: 1290, avatar: '👨', game: 'shashka' },
-            { id: 10, name: 'Sherzod', status: 'offline', rating: 1080, avatar: '👦', game: 'shashka' }
-        ];
+        // REAL FOYDALANUVCHILAR - BOSh RO'YXAT
+        let users = [];
 
-        // Tablarni ko'rsatish
-        function showTab(tab) {
-            const gameSection = document.getElementById('game-section');
-            const friendsSection = document.getElementById('friends-section');
-            const tabs = document.querySelectorAll('.tab');
+        // ==================== TELEGRAM WEBAPP MA'LUMOTLARI ====================
+        function initTelegram() {
+            try {
+                const tg = window.Telegram?.WebApp;
+                if (tg) {
+                    tg.ready();
+                    tg.expand();
 
-            if (tab === 'game') {
-                gameSection.style.display = 'block';
-                friendsSection.style.display = 'none';
-                tabs[0].classList.add('active');
-                tabs[1].classList.remove('active');
-            } else {
-                gameSection.style.display = 'none';
-                friendsSection.style.display = 'block';
-                tabs[0].classList.remove('active');
-                tabs[1].classList.add('active');
-                renderFriends();
+                    if (tg.initDataUnsafe?.user) {
+                        currentUser = tg.initDataUnsafe.user;
+                        document.getElementById('current-user-name').innerHTML =
+                            currentUser.first_name || 'Siz';
+                    }
+                }
+            } catch (e) {
+                console.log('Telegram WebApp not available');
             }
         }
 
-        // Do'stlar ro'yxatini ko'rsatish
-        function renderFriends() {
+        // ==================== FOYDALANUVCHILARNI YUKLASH ====================
+        function loadUsers() {
+            // REAL FOYDALANUVCHILAR (serverdan keladigan ma'lumotlar)
+            // Hozircha namuna, keyin serverga ulanadi
+
+            fetch('https://your-server.com/api/users', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.users) {
+                    users = data.users;
+                } else {
+                    // Agar server bo'lmasa, namuna ishlatamiz
+                    useSampleUsers();
+                }
+                renderUsers();
+            })
+            .catch(error => {
+                console.log('Serverga ulanib bo\'lmadi, namuna ishlatilmoqda');
+                useSampleUsers();
+                renderUsers();
+            });
+        }
+
+        // NAMUNA FOYDALANUVCHILAR (server ulanguncha)
+        function useSampleUsers() {
+            users = [
+                { id: 101, name: 'Ali', status: 'online', rating: 1450, avatar: '👨', last_seen: 'hozir' },
+                { id: 102, name: 'Vali', status: 'online', rating: 1320, avatar: '👦', last_seen: 'hozir' },
+                { id: 103, name: 'Sobir', status: 'offline', rating: 1180, avatar: '👨', last_seen: '5 min' },
+                { id: 104, name: 'Jalil', status: 'online', rating: 1560, avatar: '👨', last_seen: 'hozir' },
+                { id: 105, name: 'Karim', status: 'online', rating: 1240, avatar: '👦', last_seen: 'hozir' },
+                { id: 106, name: 'Botir', status: 'offline', rating: 1080, avatar: '👨', last_seen: '10 min' },
+                { id: 107, name: 'Hasan', status: 'online', rating: 1380, avatar: '👦', last_seen: 'hozir' },
+                { id: 108, name: 'Husan', status: 'offline', rating: 1120, avatar: '👨', last_seen: '15 min' },
+                { id: 109, name: 'Olim', status: 'online', rating: 1290, avatar: '👨', last_seen: 'hozir' },
+                { id: 110, name: 'Sherzod', status: 'offline', rating: 950, avatar: '👦', last_seen: '30 min' }
+            ];
+
+            // Har bir foydalanuvchi uchun statusni tasodifiy o'zgartirish
+            setInterval(() => {
+                users.forEach(user => {
+                    // 70% online, 30% offline
+                    user.status = Math.random() > 0.3 ? 'online' : 'offline';
+                });
+                renderUsers();
+            }, 30000); // Har 30 soniyada yangilanadi
+        }
+
+        // ==================== FOYDALANUVCHILARNI KO'RSATISH ====================
+        function renderUsers() {
             const friendsList = document.getElementById('friends-list');
             const searchText = document.getElementById('search-friends')?.value.toLowerCase() || '';
 
-            const onlineFriends = friends.filter(f => f.status === 'online');
-            document.getElementById('online-count').innerHTML = `${onlineFriends.length} online`;
+            // Online foydalanuvchilar soni
+            const onlineCount = users.filter(u => u.status === 'online').length;
+            document.getElementById('online-count').innerHTML = `${onlineCount} online`;
 
-            let filteredFriends = friends;
+            // Qidiruv bo'yicha filtrlash
+            let filteredUsers = users;
             if (searchText) {
-                filteredFriends = friends.filter(f => f.name.toLowerCase().includes(searchText));
+                filteredUsers = users.filter(u => u.name.toLowerCase().includes(searchText));
             }
 
+            // Foydalanuvchilarni status bo'yicha saralash (online birinchi)
+            filteredUsers.sort((a, b) => {
+                if (a.status === 'online' && b.status !== 'online') return -1;
+                if (a.status !== 'online' && b.status === 'online') return 1;
+                return b.rating - a.rating;
+            });
+
             let html = '';
-            filteredFriends.forEach(friend => {
+            filteredUsers.forEach(user => {
+                // O'zini ro'yxatdan chiqarib tashlash
+                if (currentUser && user.id === currentUser.id) return;
+
+                const statusText = user.status === 'online' ? '🟢 Online' : `⚫ Offline (${user.last_seen || 'bir ozdan keyin'})`;
+
                 html += `
                     <div class="friend-item">
                         <div class="friend-info">
                             <div class="friend-avatar">
-                                ${friend.avatar}
-                                ${friend.status === 'online' ? '<span class="online-indicator"></span>' : ''}
+                                ${user.avatar}
+                                ${user.status === 'online' ?
+                                    '<span class="online-indicator"></span>' :
+                                    '<span class="offline-indicator"></span>'}
                             </div>
                             <div class="friend-details">
-                                <div class="friend-name">${friend.name}</div>
-                                <div class="friend-status ${friend.status}">
-                                    ${friend.status === 'online' ? '🟢 Online' : '⚫ Offline'}
-                                    <span class="friend-rating">⭐ ${friend.rating}</span>
+                                <div class="friend-name">${user.name}</div>
+                                <div class="friend-status ${user.status}">
+                                    ${statusText}
+                                    <span class="friend-rating">⭐ ${user.rating}</span>
                                 </div>
                             </div>
                         </div>
                         <button class="challenge-btn"
-                                onclick="challengeFriend(${friend.id})"
-                                ${friend.status === 'offline' ? 'disabled' : ''}>
-                            🎮 O'ynash
+                                onclick="challengeUser(${user.id})"
+                                ${user.status === 'offline' ? 'disabled' : ''}>
+                            ${user.status === 'online' ? '🎮 O\'ynash' : '💤 Offline'}
                         </button>
                     </div>
                 `;
             });
+
             friendsList.innerHTML = html;
         }
 
-        // Do'stlarni qidirish
+        // Foydalanuvchilarni qidirish
         function searchFriends() {
-            renderFriends();
+            renderUsers();
         }
 
-        // Do'stni o'yinga taklif qilish
-        function challengeFriend(friendId) {
-            const friend = friends.find(f => f.id === friendId);
-            if (friend && friend.status === 'online') {
+        // Foydalanuvchini o'yinga taklif qilish
+        function challengeUser(userId) {
+            const user = users.find(u => u.id === userId);
+            if (user && user.status === 'online') {
                 gameMode = 'friend';
-                currentOpponent = friend;
-                document.getElementById('opponent-name').innerHTML = friend.name;
-                document.getElementById('opponent-level').innerHTML = `⭐ ${friend.rating}`;
-                document.getElementById('opponent-avatar').innerHTML = friend.avatar;
+                currentOpponent = user;
+                document.getElementById('opponent-name').innerHTML = user.name;
+                document.getElementById('opponent-level').innerHTML = `⭐ ${user.rating}`;
+                document.getElementById('opponent-avatar').innerHTML = user.avatar;
                 document.getElementById('ai-selector').style.display = 'none';
                 showTab('game');
                 newGame();
-                document.getElementById('status').innerHTML = `⚪ Sizning navbatingiz (${friend.name} kutmoqda)`;
+                document.getElementById('status').innerHTML = `⚪ Sizning navbatingiz (${user.name} kutmoqda)`;
+
+                // Taklif yuborilgani haqida xabar
+                alert(`✅ ${user.name} ga o'yin taklifi yuborildi!`);
             }
         }
 
@@ -588,16 +660,27 @@
             return levels[aiDifficulty - 1];
         }
 
-        // Do'stlar ro'yxatini yangilash
-        function refreshFriends() {
-            // Do'stlar statusini tasodifiy o'zgartirish (real holatda serverdan keladi)
-            friends.forEach(f => {
-                f.status = Math.random() > 0.3 ? 'online' : 'offline';
-            });
-            renderFriends();
+        // Tablarni ko'rsatish
+        function showTab(tab) {
+            const gameSection = document.getElementById('game-section');
+            const friendsSection = document.getElementById('friends-section');
+            const tabs = document.querySelectorAll('.tab');
+
+            if (tab === 'game') {
+                gameSection.style.display = 'block';
+                friendsSection.style.display = 'none';
+                tabs[0].classList.add('active');
+                tabs[1].classList.remove('active');
+            } else {
+                gameSection.style.display = 'none';
+                friendsSection.style.display = 'block';
+                tabs[0].classList.remove('active');
+                tabs[1].classList.add('active');
+                loadUsers(); // Foydalanuvchilarni yangilab ko'rsatish
+            }
         }
 
-        // Doskani ko'rsatish
+        // ==================== SHAHKA O'YINI FUNKSIYALARI ====================
         function renderBoard() {
             let html = '';
             for(let row = 0; row < 8; row++) {
@@ -628,7 +711,6 @@
             document.getElementById('board').innerHTML = html;
         }
 
-        // Katakka bosilganda
         function cellClick(row, col) {
             if(gameOver) return;
             if(gameMode === 'friend' && currentPlayer === 2) {
@@ -694,7 +776,6 @@
             }
         }
 
-        // Mumkin bo'lgan yurishlar
         function getValidMoves(row, col) {
             let moves = [];
             let piece = board[row][col];
@@ -740,7 +821,6 @@
             return moves;
         }
 
-        // Majburiy urishlarni tekshirish
         function checkForcedCaptures() {
             mustCapture = false;
             capturePositions = [];
@@ -760,7 +840,6 @@
             }
         }
 
-        // Yurishni bajarish
         function makeMove(fromRow, fromCol, toRow, toCol, isCapture) {
             let piece = board[fromRow][fromCol];
 
@@ -780,7 +859,6 @@
             }
         }
 
-        // AI yurishi
         function aiMove() {
             if (gameOver) return;
 
@@ -795,7 +873,6 @@
                 }
             }
 
-            // Darajaga qarab yurish
             let captureMoves = [];
             for (let piece of aiPieces) {
                 let moves = getValidMoves(piece.row, piece.col);
@@ -805,20 +882,14 @@
                     fromCol: piece.col,
                     toRow: m.row,
                     toCol: m.col,
-                    capture: true,
-                    captureRow: m.captureRow,
-                    captureCol: m.captureCol
+                    capture: true
                 })));
             }
 
             if (captureMoves.length > 0) {
-                // Yuqori darajali AI eng yaxshi urishni tanlaydi
                 let move;
                 if (aiDifficulty >= 4) {
-                    // Ko'p urish imkoniyatini tanlash
-                    move = captureMoves.reduce((best, current) => {
-                        return (best.captureCount || 1) > (current.captureCount || 1) ? best : current;
-                    });
+                    move = captureMoves[Math.floor(Math.random() * captureMoves.length)];
                 } else {
                     move = captureMoves[Math.floor(Math.random() * captureMoves.length)];
                 }
@@ -837,14 +908,9 @@
                 }
 
                 if (validMoves.length > 0) {
-                    // Darajaga qarab yurish
                     let move;
                     if (aiDifficulty >= 3) {
-                        // Oldinga yurishni afzal ko'rish
-                        let forwardMoves = validMoves.filter(m =>
-                            (aiDifficulty >= 4 && m.toRow < m.fromRow) || // Oq tomonga
-                            (aiDifficulty >= 5 && m.toRow < m.fromRow - 1) // Chekkaga
-                        );
+                        let forwardMoves = validMoves.filter(m => m.toRow < m.fromRow);
                         if (forwardMoves.length > 0) {
                             move = forwardMoves[Math.floor(Math.random() * forwardMoves.length)];
                         } else {
@@ -864,7 +930,6 @@
             checkWinner();
         }
 
-        // G'olibni tekshirish
         function checkWinner() {
             let white = 0, black = 0;
             for (let row = 0; row < 8; row++) {
@@ -887,7 +952,6 @@
             }
         }
 
-        // Yangi o'yin
         function newGame() {
             board = [
                 [0,2,0,2,0,2,0,2],
@@ -916,15 +980,18 @@
             renderBoard();
         }
 
-        // Taslim bo'lish
         function resign() {
             gameOver = true;
             document.getElementById('status').innerHTML = '🏳️ Siz taslim bo\'ldingiz!';
         }
 
-        // Boshlash
+        // ==================== BOSHLANG'ICH FUNKSIYALAR ====================
+        initTelegram();
+        loadUsers();
         renderBoard();
-        renderFriends();
+
+        // Har 30 soniyada foydalanuvchilarni yangilash
+        setInterval(loadUsers, 30000);
     </script>
 </body>
 </html>

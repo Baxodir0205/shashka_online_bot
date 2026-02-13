@@ -1,1103 +1,162 @@
 <!DOCTYPE html>
-<html>
+<html lang="uz">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Shashka va Shaxmat Online</title>
+    <title>Shashka AI - Professional</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            user-select: none;
-        }
-        body {
-            background: linear-gradient(145deg, #1a4731, #0a2a1a);
-            font-family: 'Segoe UI', Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 10px;
-        }
-        .game-container {
-            max-width: 100%;
-            width: 100%;
-            max-width: 400px;
-            background: #2c3e50;
-            border-radius: 25px;
-            padding: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        .header {
-            text-align: center;
-            color: #ffd700;
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 12px;
-            text-shadow: 0 0 10px rgba(255,215,0,0.5);
-        }
-        .game-type-tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 15px;
-        }
-        .game-type-tab {
-            flex: 1;
-            padding: 10px;
-            background: #34495e;
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        .game-type-tab.active {
-            background: #e67e22;
-            transform: scale(1.02);
-        }
-        .game-type-tab.chess {
-            background: #8e44ad;
-        }
-        .game-type-tab.chess.active {
-            background: #9b59b6;
-        }
-        .tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 15px;
-        }
-        .tab {
-            flex: 1;
-            padding: 10px;
-            background: #34495e;
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .tab.active {
-            background: #3498db;
-        }
-        .players {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #34495e;
-            padding: 12px;
-            border-radius: 15px;
-            margin-bottom: 15px;
-            color: white;
-        }
-        .player-card {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .avatar {
-            width: 40px;
-            height: 40px;
-            background: #3498db;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-            position: relative;
-        }
-        .online-indicator {
-            position: absolute;
-            bottom: 2px;
-            right: 2px;
-            width: 10px;
-            height: 10px;
-            background: #2ecc71;
-            border-radius: 50%;
-            border: 2px solid #2c3e50;
-        }
-        .offline-indicator {
-            position: absolute;
-            bottom: 2px;
-            right: 2px;
-            width: 10px;
-            height: 10px;
-            background: #95a5a6;
-            border-radius: 50%;
-            border: 2px solid #2c3e50;
-        }
-        .player-info {
-            display: flex;
-            flex-direction: column;
-        }
-        .player-name {
-            font-weight: bold;
-            font-size: 14px;
-        }
-        .player-rating {
-            font-size: 12px;
-            color: #f1c40f;
-        }
-        .vs {
-            background: #e74c3c;
-            padding: 5px 15px;
-            border-radius: 30px;
-            font-weight: bold;
-            font-size: 14px;
-        }
-        .ai-level-selector {
-            background: #34495e;
-            padding: 10px;
-            border-radius: 12px;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .ai-level-selector label {
-            color: white;
-            font-weight: bold;
-            font-size: 14px;
-        }
-        .ai-level-selector select {
-            flex: 1;
-            padding: 8px;
-            border-radius: 8px;
-            border: none;
-            background: #2c3e50;
-            color: white;
-            font-weight: bold;
-            font-size: 14px;
-        }
-        .board-container {
-            background: #8b5a2b;
-            padding: 12px;
-            border-radius: 15px;
-            margin-bottom: 15px;
-        }
-        .coordinates {
-            display: flex;
-            justify-content: space-around;
-            color: #ffd700;
-            font-weight: bold;
-            font-size: 14px;
-            padding: 5px 0;
-        }
-        .board {
-            display: grid;
-            grid-template-columns: repeat(8, 1fr);
-            gap: 1px;
-            background: #594735;
-            padding: 1px;
-            border-radius: 8px;
-        }
-        .cell {
-            aspect-ratio: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            cursor: pointer;
-            position: relative;
-        }
-        .dark { background: #8b5a2b; }
-        .light { background: #f0d9b5; }
-        .chess-board .dark { background: #b58863; }
-        .chess-board .light { background: #f0d9b5; }
-        .white-piece { color: white; text-shadow: 1px 1px 2px black; }
-        .black-piece { color: #2c3e50; text-shadow: 1px 1px 2px white; }
-        .king-piece { font-size: 32px; }
-        .selected { box-shadow: inset 0 0 0 3px gold; }
-        .possible-move { box-shadow: inset 0 0 0 3px #27ae60; }
-        .capture-move { box-shadow: inset 0 0 0 3px #e74c3c; }
-        .status {
-            background: #34495e;
-            color: white;
-            padding: 12px;
-            border-radius: 30px;
-            text-align: center;
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
-
-        /* Do'stlar bo'limi */
-        .friends-section {
-            background: #34495e;
-            border-radius: 15px;
-            padding: 15px;
-            color: white;
-        }
-        .friends-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-        .friends-header h3 {
-            color: #ffd700;
-            font-size: 18px;
-        }
-        .online-count {
-            background: #27ae60;
-            padding: 4px 12px;
-            border-radius: 30px;
-            font-size: 12px;
-        }
-        .search-box {
-            margin-bottom: 12px;
-        }
-        .search-box input {
-            width: 100%;
-            padding: 10px;
-            border-radius: 30px;
-            border: none;
-            background: #2c3e50;
-            color: white;
-            font-size: 14px;
-        }
-        .friends-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            max-height: 300px;
-            overflow-y: auto;
-            min-height: 200px;
-        }
-        .friend-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: #2c3e50;
-            padding: 10px;
-            border-radius: 12px;
-        }
-        .friend-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .friend-avatar {
-            width: 40px;
-            height: 40px;
-            background: #3498db;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            position: relative;
-        }
-        .friend-details {
-            display: flex;
-            flex-direction: column;
-        }
-        .friend-name {
-            font-weight: bold;
-            font-size: 14px;
-        }
-        .friend-status {
-            font-size: 12px;
-        }
-        .friend-status.online { color: #2ecc71; }
-        .friend-status.offline { color: #95a5a6; }
-        .friend-rating {
-            font-size: 11px;
-            color: #f1c40f;
-        }
-        .invite-btn {
-            background: #e74c3c;
-            color: white;
-            border: none;
-            padding: 6px 15px;
-            border-radius: 30px;
-            font-size: 12px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .invite-btn:disabled {
-            background: #95a5a6;
-            cursor: not-allowed;
-        }
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: #95a5a6;
-            background: #2c3e50;
-            border-radius: 12px;
-        }
-        .empty-state .icon {
-            font-size: 48px;
-            margin-bottom: 10px;
-        }
-        .empty-state .title {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 5px;
-            color: #ffd700;
-        }
-        .empty-state .text {
-            font-size: 14px;
-            margin-bottom: 15px;
-        }
-        .buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 15px;
-        }
-        .btn {
-            padding: 12px;
-            border: none;
-            border-radius: 30px;
-            font-size: 14px;
-            font-weight: bold;
-            color: white;
-            cursor: pointer;
-        }
-        .btn-red { background: #e74c3c; }
-        .btn-blue { background: #3498db; }
-        .btn-green { background: #27ae60; }
-        .btn-purple { background: #9b59b6; }
-        .footer {
-            text-align: center;
-            margin-top: 15px;
-            color: #95a5a6;
-            font-size: 11px;
-        }
-        .coordinates span {
-            width: 30px;
-            text-align: center;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
+        body { background: #1a252f; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; color: white; }
+        .game-container { width: 100%; max-width: 400px; padding: 15px; }
+        .players-mini { display: flex; justify-content: space-between; margin-bottom: 20px; background: #2c3e50; padding: 12px; border-radius: 15px; border: 1px solid #3e4f5f; }
+        .p-card { display: flex; align-items: center; gap: 10px; }
+        .p-info { display: flex; flex-direction: column; }
+        .p-name { font-weight: bold; font-size: 14px; }
+        .p-rank { font-size: 12px; color: #f1c40f; }
+        .vs-badge { align-self: center; background: #e74c3c; padding: 2px 8px; border-radius: 5px; font-size: 12px; font-weight: bold; }
+        .board-wrapper { background: #3e2723; padding: 8px; border-radius: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .board { display: grid; grid-template-columns: repeat(8, 1fr); aspect-ratio: 1/1; border: 2px solid #2b1d1a; }
+        .cell { display: flex; align-items: center; justify-content: center; font-size: 30px; position: relative; width: 100%; height: 100%; }
+        .light { background: #d7b899; }
+        .dark { background: #795548; }
+        .piece { width: 80%; height: 80%; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; transition: 0.2s; }
+        .white { background: #ecf0f1; box-shadow: 0 4px #bdc3c7; color: #7f8c8d; }
+        .black { background: #2c3e50; box-shadow: 0 4px #1a252f; color: #ecf0f1; }
+        .king::after { content: '👑'; font-size: 16px; position: absolute; top: 20%; }
+        .selected { transform: scale(1.1); box-shadow: 0 0 15px #f1c40f; z-index: 5; }
+        .hint { width: 12px; height: 12px; background: rgba(46, 204, 113, 0.7); border-radius: 50%; cursor: pointer; }
+        .status-bar { margin-top: 20px; text-align: center; background: #2c3e50; padding: 12px; border-radius: 25px; color: #f1c40f; font-weight: bold; }
+        .exit-btn { margin-top: 15px; width: 100%; padding: 12px; border: none; border-radius: 12px; background: #c0392b; color: white; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
-    <div class="game-container">
-        <div class="header">🎯 SHAHKA & ♟️ SHAXMAT ONLINE</div>
 
-        <!-- O'yin turini tanlash -->
-        <div class="game-type-tabs">
-            <button class="game-type-tab active" onclick="setGameType('checkers')">🎯 Shashka</button>
-            <button class="game-type-tab chess" onclick="setGameType('chess')">♟️ Shaxmat</button>
+<div class="game-container">
+    <div class="players-mini">
+        <div class="p-card">
+            <span style="font-size: 24px;">👤</span>
+            <div class="p-info"><span class="p-name">Siz</span><span class="p-rank">★ 1200</span></div>
         </div>
-
-        <!-- Tablar (O'yin / Do'stlar) -->
-        <div class="tabs">
-            <button class="tab active" onclick="showTab('game')">🎮 O'YIN</button>
-            <button class="tab" onclick="showTab('friends')">👥 DO'STLAR</button>
-        </div>
-
-        <!-- O'YIN BO'LIMI -->
-        <div id="game-section">
-            <div class="players">
-                <div class="player-card">
-                    <div class="avatar" id="current-user-avatar">👤</div>
-                    <div class="player-info">
-                        <span class="player-name" id="current-user-name">Siz</span>
-                        <span class="player-rating" id="current-user-rating">⭐ 1240</span>
-                    </div>
-                </div>
-                <div class="vs">VS</div>
-                <div class="player-card" id="opponent-card">
-                    <div class="avatar" id="opponent-avatar">🤖</div>
-                    <div class="player-info">
-                        <span class="player-name" id="opponent-name">AI Bot</span>
-                        <span class="player-rating" id="opponent-level">⚡ Daraja 3</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- AI DARAJASI -->
-            <div class="ai-level-selector" id="ai-selector">
-                <label>🤖 AI darajasi:</label>
-                <select id="ai-level" onchange="changeAIDifficulty()">
-                    <option value="1">⭐ Boshlang'ich</option>
-                    <option value="2">⭐⭐ O'rta</option>
-                    <option value="3" selected>⭐⭐⭐ Tajribali</option>
-                    <option value="4">⭐⭐⭐⭐ Mutaxassis</option>
-                    <option value="5">⭐⭐⭐⭐⭐ Usta</option>
-                </select>
-            </div>
-
-            <!-- DOSKA -->
-            <div class="board-container">
-                <div class="coordinates" id="top-coordinates">
-                    <span></span><span>A</span><span>B</span><span>C</span><span>D</span>
-                    <span>E</span><span>F</span><span>G</span><span>H</span><span></span>
-                </div>
-                <div id="board" class="board"></div>
-                <div class="coordinates" id="bottom-coordinates">
-                    <span>8</span><span>7</span><span>6</span><span>5</span>
-                    <span>4</span><span>3</span><span>2</span><span>1</span>
-                </div>
-            </div>
-
-            <div id="status" class="status">⚪ Sizning navbatingiz</div>
-
-            <div class="buttons">
-                <button class="btn btn-red" onclick="exitGame()">🚪 O'yindan chiqish</button>
-                <button class="btn btn-blue" onclick="showTab('friends')">👥 Do'stni taklif qilish</button>
-            </div>
-        </div>
-
-        <!-- DO'STLAR BO'LIMI -->
-        <div id="friends-section" style="display: none;">
-            <div class="friends-section">
-                <div class="friends-header">
-                    <h3>👥 Bot a'zolari</h3>
-                    <span class="online-count" id="online-count">0 online</span>
-                </div>
-
-                <div class="search-box">
-                    <input type="text" id="search-friends" placeholder="🔍 Qidirish..." onkeyup="searchFriends()">
-                </div>
-
-                <div class="friends-list" id="friends-list"></div>
-
-                <div style="display: flex; gap: 10px; margin-top: 15px;">
-                    <button class="btn btn-blue" style="flex:1" onclick="loadFriends()">🔄 Yangilash</button>
-                    <button class="btn btn-green" style="flex:1" onclick="playWithAI()">🤖 AI bilan o'ynash</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="footer">
-            @shahka_online_bot • v6.0
+        <div class="vs-badge">VS</div>
+        <div class="p-card">
+            <div class="p-info" style="text-align: right;"><span class="p-name">AI Bot</span><span class="p-rank">Level 3</span></div>
+            <span style="font-size: 24px;">🤖</span>
         </div>
     </div>
 
-    <script>
-        // Telegram WebApp integratsiyasi
-        let tg = window.Telegram?.WebApp;
-        let user = tg?.initDataUnsafe?.user || { first_name: 'Siz', id: Date.now() };
+    <div class="board-wrapper">
+        <div id="board" class="board"></div>
+    </div>
 
-        // O'yin turi (checkers yoki chess)
-        let gameType = 'checkers';
+    <div id="status" class="status-bar">⚪ Sizning navbatingiz</div>
+    <button class="exit-btn" onclick="exitGame()">O'yindan chiqish</button>
+</div>
 
-        // URL parametrlarini olish
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('game') === 'chess') {
-            gameType = 'chess';
-            document.querySelector('.game-type-tab.active').classList.remove('active');
-            document.querySelectorAll('.game-type-tab')[1].classList.add('active');
-            document.querySelector('.game-type-tab')[0].classList.remove('active');
-        }
+<script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
 
-        // Shashka doskasi
-        let checkersBoard = [
-            [0,2,0,2,0,2,0,2],
-            [2,0,2,0,2,0,2,0],
-            [0,2,0,2,0,2,0,2],
-            [0,0,0,0,0,0,0,0],
-            [0,0,0,0,0,0,0,0],
-            [1,0,1,0,1,0,1,0],
-            [0,1,0,1,0,1,0,1],
-            [1,0,1,0,1,0,1,0]
-        ];
+    let board = [
+        [0,2,0,2,0,2,0,2], [2,0,2,0,2,0,2,0], [0,2,0,2,0,2,0,2],
+        [0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0],
+        [1,0,1,0,1,0,1,0], [0,1,0,1,0,1,0,1], [1,0,1,0,1,0,1,0]
+    ];
 
-        // Shaxmat doskasi
-        let chessBoard = [
-            ['r','n','b','q','k','b','n','r'],
-            ['p','p','p','p','p','p','p','p'],
-            ['','','','','','','',''],
-            ['','','','','','','',''],
-            ['','','','','','','',''],
-            ['','','','','','','',''],
-            ['P','P','P','P','P','P','P','P'],
-            ['R','N','B','Q','K','B','N','R']
-        ];
+    let currentPlayer = 1;
+    let selected = null;
+    let moves = [];
 
-        // Shaxmat toshlari belgilari
-        const chessPieces = {
-            'r': '♜', 'n': '♞', 'b': '♝', 'q': '♛', 'k': '♚', 'p': '♟',
-            'R': '♖', 'N': '♘', 'B': '♗', 'Q': '♕', 'K': '♔', 'P': '♙'
-        };
+    function render() {
+        const b = document.getElementById('board');
+        b.innerHTML = '';
+        for(let r=0; r<8; r++) {
+            for(let c=0; c<8; c++) {
+                const cell = document.createElement('div');
+                cell.className = `cell ${(r+c)%2===0 ? 'light' : 'dark'}`;
 
-        let currentPlayer = 1; // 1 - oq (siz), 2 - qora (AI)
-        let selectedRow = -1, selectedCol = -1;
-        let possibleMoves = [];
-        let gameOver = false;
-        let gameMode = 'ai';
-        let currentOpponent = null;
-        let aiDifficulty = 3;
-
-        // Joriy foydalanuvchi
-        let currentUser = {
-            id: user.id || 1,
-            name: user.first_name || 'Siz',
-            username: user.username || '',
-            rating: 1240,
-            avatar: '👤'
-        };
-
-        // Doskani ko'rsatish
-        function renderBoard() {
-            let boardElement = document.getElementById('board');
-            boardElement.className = 'board ' + (gameType === 'chess' ? 'chess-board' : '');
-
-            let html = '';
-            let board = gameType === 'chess' ? chessBoard : checkersBoard;
-
-            for(let row = 0; row < 8; row++) {
-                for(let col = 0; col < 8; col++) {
-                    let cellClass = (row + col) % 2 === 0 ? 'light' : 'dark';
-                    let piece = board[row][col];
-                    let symbol = '';
-                    let pieceClass = '';
-
-                    if (gameType === 'chess') {
-                        // Shaxmat toshlari
-                        if (piece) {
-                            symbol = chessPieces[piece] || piece;
-                            pieceClass = piece === piece.toUpperCase() ? 'white-piece' : 'black-piece';
-                        }
-                    } else {
-                        // Shashka toshlari
-                        if(piece === 1) { symbol = '⚪'; pieceClass = 'white-piece'; }
-                        if(piece === 2) { symbol = '⚫'; pieceClass = 'black-piece'; }
-                        if(piece === 3) { symbol = '👑⚪'; pieceClass = 'white-piece king-piece'; }
-                        if(piece === 4) { symbol = '👑⚫'; pieceClass = 'black-piece king-piece'; }
-                    }
-
-                    let selectedClass = (selectedRow === row && selectedCol === col) ? 'selected' : '';
-
-                    let moveClass = '';
-                    if (possibleMoves.some(m => m.row === row && m.col === col)) {
-                        moveClass = possibleMoves.find(m => m.row === row && m.col === col).capture ? 'capture-move' : 'possible-move';
-                    }
-
-                    html += `<div class="cell ${cellClass} ${pieceClass} ${selectedClass} ${moveClass}"
-                            onclick="cellClick(${row}, ${col})">${symbol}</div>`;
+                if(board[r][c] > 0) {
+                    const p = document.createElement('div');
+                    p.className = `piece ${board[r][c]%2===1 ? 'white' : 'black'} ${board[r][c]>2 ? 'king' : ''}`;
+                    if(selected && selected.r === r && selected.c === c) p.classList.add('selected');
+                    p.onclick = () => selectPiece(r, c);
+                    cell.appendChild(p);
                 }
-            }
-            boardElement.innerHTML = html;
-        }
 
-        // Shashka uchun yurishlar
-        function getCheckersMoves(row, col, checkCaptures = true) {
-            let moves = [];
-            let piece = checkersBoard[row][col];
-            let isKing = piece === 3 || piece === 4;
-            let directions = isKing ? [[-1,-1], [-1,1], [1,-1], [1,1]] :
-                           (piece === 1 || piece === 3) ? [[-1,-1], [-1,1]] : [[1,-1], [1,1]];
-
-            let captureMoves = [];
-
-            for (let dir of directions) {
-                let midRow = row + dir[0];
-                let midCol = col + dir[1];
-                let captureRow = row + dir[0] * 2;
-                let captureCol = col + dir[1] * 2;
-
-                if (captureRow >= 0 && captureRow < 8 && captureCol >= 0 && captureCol < 8 &&
-                    checkersBoard[captureRow][captureCol] === 0) {
-
-                    if (midRow >= 0 && midRow < 8 && midCol >= 0 && midCol < 8) {
-                        let midPiece = checkersBoard[midRow][midCol];
-                        if ((currentPlayer === 1 && (midPiece === 2 || midPiece === 4)) ||
-                            (currentPlayer === 2 && (midPiece === 1 || midPiece === 3))) {
-                            captureMoves.push({row: captureRow, col: captureCol, capture: true});
-                        }
-                    }
+                let move = moves.find(m => m.tr === r && m.tc === c);
+                if(move) {
+                    const h = document.createElement('div');
+                    h.className = 'hint';
+                    h.onclick = () => doMove(move);
+                    cell.appendChild(h);
                 }
-            }
-
-            if (captureMoves.length > 0 && checkCaptures) {
-                return captureMoves;
-            }
-
-            if (!checkCaptures || captureMoves.length === 0) {
-                for (let dir of directions) {
-                    let newRow = row + dir[0];
-                    let newCol = col + dir[1];
-                    if (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8 && checkersBoard[newRow][newCol] === 0) {
-                        moves.push({row: newRow, col: newCol, capture: false});
-                    }
-                }
-            }
-
-            return moves;
-        }
-
-        // Shaxmat uchun yurishlar (soddalashtirilgan)
-        function getChessMoves(row, col) {
-            let moves = [];
-            let piece = chessBoard[row][col];
-            if (!piece) return moves;
-
-            let isWhite = piece === piece.toUpperCase();
-            if ((isWhite && currentPlayer === 2) || (!isWhite && currentPlayer === 1)) return moves;
-
-            let pieceType = piece.toLowerCase();
-
-            // Piyoda yurishi
-            if (pieceType === 'p') {
-                let dir = isWhite ? -1 : 1;
-                // Oldinga
-                if (row + dir >= 0 && row + dir < 8 && !chessBoard[row + dir][col]) {
-                    moves.push({row: row + dir, col: col, capture: false});
-                    // Dastlabki ikki qadam
-                    if ((isWhite && row === 6) || (!isWhite && row === 1)) {
-                        if (!chessBoard[row + 2*dir][col]) {
-                            moves.push({row: row + 2*dir, col: col, capture: false});
-                        }
-                    }
-                }
-                // Diagonal urish
-                for (let dc of [-1, 1]) {
-                    if (col + dc >= 0 && col + dc < 8 && row + dir >= 0 && row + dir < 8) {
-                        let target = chessBoard[row + dir][col + dc];
-                        if (target && ((isWhite && target === target.toLowerCase()) ||
-                                      (!isWhite && target === target.toUpperCase()))) {
-                            moves.push({row: row + dir, col: col + dc, capture: true});
-                        }
-                    }
-                }
-            }
-
-            // Rook (top)
-            if (pieceType === 'r') {
-                for (let [dr, dc] of [[-1,0], [1,0], [0,-1], [0,1]]) {
-                    for (let i = 1; i < 8; i++) {
-                        let nr = row + dr * i, nc = col + dc * i;
-                        if (nr < 0 || nr >= 8 || nc < 0 || nc >= 8) break;
-                        if (!chessBoard[nr][nc]) {
-                            moves.push({row: nr, col: nc, capture: false});
-                        } else {
-                            if ((isWhite && chessBoard[nr][nc] === chessBoard[nr][nc].toLowerCase()) ||
-                                (!isWhite && chessBoard[nr][nc] === chessBoard[nr][nc].toUpperCase())) {
-                                moves.push({row: nr, col: nc, capture: true});
-                            }
-                            break;
-                        }
-                    }
-                }
-            }
-
-            // Knight (ot)
-            if (pieceType === 'n') {
-                let jumps = [[-2,-1], [-2,1], [-1,-2], [-1,2], [1,-2], [1,2], [2,-1], [2,1]];
-                for (let [dr, dc] of jumps) {
-                    let nr = row + dr, nc = col + dc;
-                    if (nr >= 0 && nr < 8 && nc >= 0 && nc < 8) {
-                        if (!chessBoard[nr][nc] ||
-                            (isWhite && chessBoard[nr][nc] === chessBoard[nr][nc].toLowerCase()) ||
-                            (!isWhite && chessBoard[nr][nc] === chessBoard[nr][nc].toUpperCase())) {
-                            moves.push({row: nr, col: nc, capture: !!chessBoard[nr][nc]});
-                        }
-                    }
-                }
-            }
-
-            // Bishop (fil)
-            if (pieceType === 'b') {
-                for (let [dr, dc] of [[-1,-1], [-1,1], [1,-1], [1,1]]) {
-                    for (let i = 1; i < 8; i++) {
-                        let nr = row + dr * i, nc = col + dc * i;
-                        if (nr < 0 || nr >= 8 || nc < 0 || nc >= 8) break;
-                        if (!chessBoard[nr][nc]) {
-                            moves.push({row: nr, col: nc, capture: false});
-                        } else {
-                            if ((isWhite && chessBoard[nr][nc] === chessBoard[nr][nc].toLowerCase()) ||
-                                (!isWhite && chessBoard[nr][nc] === chessBoard[nr][nc].toUpperCase())) {
-                                moves.push({row: nr, col: nc, capture: true});
-                            }
-                            break;
-                        }
-                    }
-                }
-            }
-
-            // Queen (farzin)
-            if (pieceType === 'q') {
-                for (let [dr, dc] of [[-1,0], [1,0], [0,-1], [0,1], [-1,-1], [-1,1], [1,-1], [1,1]]) {
-                    for (let i = 1; i < 8; i++) {
-                        let nr = row + dr * i, nc = col + dc * i;
-                        if (nr < 0 || nr >= 8 || nc < 0 || nc >= 8) break;
-                        if (!chessBoard[nr][nc]) {
-                            moves.push({row: nr, col: nc, capture: false});
-                        } else {
-                            if ((isWhite && chessBoard[nr][nc] === chessBoard[nr][nc].toLowerCase()) ||
-                                (!isWhite && chessBoard[nr][nc] === chessBoard[nr][nc].toUpperCase())) {
-                                moves.push({row: nr, col: nc, capture: true});
-                            }
-                            break;
-                        }
-                    }
-                }
-            }
-
-            // King (shoh)
-            if (pieceType === 'k') {
-                for (let dr of [-1,0,1]) {
-                    for (let dc of [-1,0,1]) {
-                        if (dr === 0 && dc === 0) continue;
-                        let nr = row + dr, nc = col + dc;
-                        if (nr >= 0 && nr < 8 && nc >= 0 && nc < 8) {
-                            if (!chessBoard[nr][nc] ||
-                                (isWhite && chessBoard[nr][nc] === chessBoard[nr][nc].toLowerCase()) ||
-                                (!isWhite && chessBoard[nr][nc] === chessBoard[nr][nc].toUpperCase())) {
-                                moves.push({row: nr, col: nc, capture: !!chessBoard[nr][nc]});
-                            }
-                        }
-                    }
-                }
-            }
-
-            return moves;
-        }
-
-        function getValidMoves(row, col, checkCaptures = true) {
-            if (gameType === 'chess') {
-                return getChessMoves(row, col);
-            } else {
-                return getCheckersMoves(row, col, checkCaptures);
+                b.appendChild(cell);
             }
         }
+    }
 
-        function cellClick(row, col) {
-            if(gameOver) return;
+    function selectPiece(r, c) {
+        if(currentPlayer !== 1 || (board[r][c] !== 1 && board[r][c] !== 3)) return;
+        selected = {r, c};
+        moves = getValidMoves(r, c, board);
+        render();
+    }
 
-            if (selectedRow === -1) {
-                // Tosh tanlash
-                let canSelect = false;
-                if (gameType === 'chess') {
-                    let piece = chessBoard[row][col];
-                    if (piece) {
-                        let isWhite = piece === piece.toUpperCase();
-                        canSelect = (currentPlayer === 1 && isWhite) || (currentPlayer === 2 && !isWhite);
-                    }
-                } else {
-                    canSelect = (currentPlayer === 1 && (checkersBoard[row][col] === 1 || checkersBoard[row][col] === 3)) ||
-                               (currentPlayer === 2 && (checkersBoard[row][col] === 2 || checkersBoard[row][col] === 4));
-                }
+    function getValidMoves(r, c, curBoard) {
+        let p = curBoard[r][c];
+        let v_moves = [];
+        let dirs = (p > 2) ? [[-1,-1],[-1,1],[1,-1],[1,1]] : (p===1 ? [[-1,-1],[-1,1]] : [[1,-1],[1,1]]);
 
-                if (canSelect) {
-                    selectedRow = row;
-                    selectedCol = col;
-                    possibleMoves = getValidMoves(row, col, true);
-                    renderBoard();
-                }
-            } else {
-                let move = possibleMoves.find(m => m.row === row && m.col === col);
-                if (move) {
-                    makeMove(selectedRow, selectedCol, row, col, move.capture);
+        dirs.forEach(d => {
+            // Oddiy yurish
+            let nr = r + d[0], nc = c + d[1];
+            if(nr>=0 && nr<8 && nc>=0 && nc<8 && curBoard[nr][nc] === 0) {
+                v_moves.push({fr: r, fc: c, tr: nr, tc: nc, cap: false});
+            }
+            // Zarba berish
+            let zr = r + d[0]*2, zc = c + d[1]*2;
+            if(zr>=0 && zr<8 && zc>=0 && zc<8 && curBoard[zr][zc] === 0) {
+                let mid = curBoard[r+d[0]][c+d[1]];
+                if(mid > 0 && mid%2 !== p%2) v_moves.push({fr: r, fc: c, tr: zr, tc: zc, cap: true, mr: r+d[0], mc: c+d[1]});
+            }
+        });
+        return v_moves;
+    }
 
-                    selectedRow = -1;
-                    selectedCol = -1;
-                    possibleMoves = [];
+    function doMove(m) {
+        if(m.cap) board[m.mr][m.mc] = 0;
+        board[m.tr][m.tc] = board[m.fr][m.fc];
+        board[m.fr][m.fc] = 0;
+        if(m.tr === 0 && board[m.tr][m.tc] === 1) board[m.tr][m.tc] = 3;
+        if(m.tr === 7 && board[m.tr][m.tc] === 2) board[m.tr][m.tc] = 4;
 
-                    currentPlayer = currentPlayer === 1 ? 2 : 1;
-                    document.getElementById('status').innerHTML = gameType === 'chess'
-                        ? (currentPlayer === 1 ? '⚪ Sizning navbatingiz (Oq)' : '🤖 AI o\'ylamoqda... (Qora)')
-                        : (currentPlayer === 1 ? '⚪ Sizning navbatingiz' : '🤖 AI o\'ylamoqda...');
+        selected = null; moves = [];
+        currentPlayer = (currentPlayer === 1) ? 2 : 1;
+        document.getElementById('status').innerText = currentPlayer === 2 ? "⚫ Bot o'ylamoqda..." : "⚪ Sizning navbatingiz";
+        render();
+        if(currentPlayer === 2) setTimeout(aiPlay, 800);
+    }
 
-                    renderBoard();
-                    checkWinner();
-
-                    if (!gameOver && gameMode === 'ai' && currentPlayer === 2) {
-                        setTimeout(aiMove, 500);
-                    }
+    function aiPlay() {
+        let all = [];
+        for(let r=0; r<8; r++) {
+            for(let c=0; c<8; c++) {
+                if(board[r][c] === 2 || board[r][c] === 4) {
+                    all.push(...getValidMoves(r, c, board));
                 }
             }
         }
-
-        function makeMove(fromRow, fromCol, toRow, toCol, isCapture) {
-            if (gameType === 'chess') {
-                chessBoard[toRow][toCol] = chessBoard[fromRow][fromCol];
-                chessBoard[fromRow][fromCol] = '';
-
-                // Piyodani farzinga aylantirish
-                let piece = chessBoard[toRow][toCol];
-                if (piece.toLowerCase() === 'p') {
-                    if ((piece === 'P' && toRow === 0) || (piece === 'p' && toRow === 7)) {
-                        chessBoard[toRow][toCol] = piece === 'P' ? 'Q' : 'q';
-                    }
-                }
-            } else {
-                let piece = checkersBoard[fromRow][fromCol];
-
-                if (isCapture) {
-                    let midRow = (fromRow + toRow) / 2;
-                    let midCol = (fromCol + toCol) / 2;
-                    checkersBoard[midRow][midCol] = 0;
-                }
-
-                checkersBoard[toRow][toCol] = piece;
-                checkersBoard[fromRow][fromCol] = 0;
-
-                // Farzinni toj kiydirish
-                if (piece === 1 && toRow === 0) {
-                    checkersBoard[toRow][toCol] = 3;
-                }
-                if (piece === 2 && toRow === 7) {
-                    checkersBoard[toRow][toCol] = 4;
-                }
-            }
+        if(all.length > 0) {
+            let caps = all.filter(m => m.cap);
+            let move = caps.length > 0 ? caps[0] : all[Math.floor(Math.random()*all.length)];
+            doMove(move);
+        } else {
+            document.getElementById('status').innerText = "🎉 Siz yutdingiz!";
         }
+    }
 
-        function aiMove() {
-            if (gameOver || gameMode !== 'ai') return;
-
-            let allMoves = [];
-            let board = gameType === 'chess' ? chessBoard : checkersBoard;
-
-            for(let row = 0; row < 8; row++) {
-                for(let col = 0; col < 8; col++) {
-                    let piece = board[row][col];
-                    if (gameType === 'chess') {
-                        if (piece && ((currentPlayer === 2 && piece === piece.toLowerCase()) ||
-                                     (currentPlayer === 2 && piece === piece.toLowerCase()))) {
-                            let moves = getValidMoves(row, col);
-                            for(let move of moves) {
-                                allMoves.push({
-                                    fromRow: row,
-                                    fromCol: col,
-                                    toRow: move.row,
-                                    toCol: move.col,
-                                    capture: move.capture
-                                });
-                            }
-                        }
-                    } else {
-                        if ((currentPlayer === 2 && (piece === 2 || piece === 4))) {
-                            let moves = getValidMoves(row, col);
-                            for(let move of moves) {
-                                allMoves.push({
-                                    fromRow: row,
-                                    fromCol: col,
-                                    toRow: move.row,
-                                    toCol: move.col,
-                                    capture: move.capture
-                                });
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (allMoves.length > 0) {
-                let move;
-                if (aiDifficulty <= 2) {
-                    move = allMoves[Math.floor(Math.random() * allMoves.length)];
-                } else {
-                    let captureMoves = allMoves.filter(m => m.capture);
-                    if (captureMoves.length > 0 && aiDifficulty >= 3) {
-                        move = captureMoves[Math.floor(Math.random() * captureMoves.length)];
-                    } else {
-                        move = allMoves[Math.floor(Math.random() * allMoves.length)];
-                    }
-                }
-
-                makeMove(move.fromRow, move.fromCol, move.toRow, move.toCol, move.capture);
-            }
-
-            currentPlayer = 1;
-            document.getElementById('status').innerHTML = gameType === 'chess'
-                ? '⚪ Sizning navbatingiz (Oq)'
-                : '⚪ Sizning navbatingiz';
-            renderBoard();
-            checkWinner();
-        }
-
-        function checkWinner() {
-            if (gameType === 'chess') {
-                // Shaxmat uchun soddalashtirilgan tekshirish
-                let whiteKing = false, blackKing = false;
-                for(let row = 0; row < 8; row++) {
-                    for(let col = 0; col < 8; col++) {
-                        if (chessBoard[row][col] === 'K') whiteKing = true;
-                        if (chessBoard[row][col] === 'k') blackKing = true;
-                    }
-                }
-
-                if (!whiteKing) {
-                    gameOver = true;
-                    document.getElementById('status').innerHTML = '🤖 AI yutdi (Qora)!';
-                }
-                if (!blackKing) {
-                    gameOver = true;
-                    document.getElementById('status').innerHTML = '🎉 Siz yutdingiz (Oq)!';
-                }
-            } else {
-                let white = 0, black = 0;
-                for(let row = 0; row < 8; row++) {
-                    for(let col = 0; col < 8; col++) {
-                        if(checkersBoard[row][col] === 1 || checkersBoard[row][col] === 3) white++;
-                        if(checkersBoard[row][col] === 2 || checkersBoard[row][col] === 4) black++;
-                    }
-                }
-
-                if(white === 0) {
-                    gameOver = true;
-                    document.getElementById('status').innerHTML = '🤖 AI yutdi!';
-                }
-                if(black === 0) {
-                    gameOver = true;
-                    document.getElementById('status').innerHTML = '🎉 Siz yutdingiz!';
-                }
-            }
-        }
-
-        // O'yin turini o'zgartirish
-        function setGameType(type) {
-            gameType = type;
-
-            // Tablarni yangilash
-            document.querySelectorAll('.game-type-tab').forEach((tab, index) => {
-                if ((type === 'checkers' && index === 0) || (type === 'chess' && index === 1)) {
-                    tab.classList.add('active');
-                } else {
-                    tab.classList.remove('active');
-                }
-            });
-
-            // Doskani yangilash
-            newGame();
-
-            // Status matnini yangilash
-            document.getElementById('status').innerHTML = type === 'chess'
-                ? '⚪ Sizning navbatingiz (Oq)'
-                : '⚪ Sizning navbatingiz';
-        }
-
-        // Do'stlar ro'yxatini yuklash
-        function loadFriends() {
-            const members = []; // Hech kim yo'q
-
-            const onlineCount = members.filter(m => m.status === 'online').length;
-            document.getElementById('online-count').innerHTML = `${onlineCount} online / ${members.length} ta`;
-
-            let html = '<div class="empty-state">';
-            html += '<div class="icon">👥</div>';
-            html += '<div class="title">Hali a\'zolar yo\'q</div>';
-            html += '<div class="text">Botga hali hech kim obuna bo\'lmagan<br>Birinchi bo\'lib siz qo\'shiling!</div>';
-            html += '<button class="btn btn-green" onclick="shareBot()" style="padding: 8px 20px; font-size: 14px;">📢 Botni ulashish</button>';
-            html += '</div>';
-            document.getElementById('friends-list').innerHTML = html;
-        }
-
-        function searchFriends() {
-            loadFriends();
-        }
-
-        function shareBot() {
-            if (tg) {
-                tg.showPopup({
-                    title: 'Botni ulashish',
-                    message: 'Do\'stlaringizni taklif qiling!',
-                    buttons: [
-                        {id: 'share', type: 'default', text: '📤 Ulashish'},
-                        {type: 'cancel'}
-                    ]
-                });
-            } else {
-                alert('Bot linki: https://t.me/shashka_gamebot');
-            }
-        }
-
-        function inviteFriend(friendId) {
-            let friend = members.find(m => m.id === friendId);
-            if (friend && friend.status === 'online') {
-                gameMode = 'pvp';
-                currentOpponent = friend;
-                document.getElementById('opponent-name').innerHTML = friend.name;
-                document.getElementById('opponent-avatar').innerHTML = friend.avatar;
-                document.getElementById('ai-selector').style.display = 'none';
-                showTab('game');
-                newGame();
-                document.getElementById('status').innerHTML = `🎮 ${friend.name} bilan o'yin boshlandi`;
-
-                if (tg) {
-                    tg.showPopup({
-                        title: 'Taklif yuborildi',
-                        message: `${friend.name} ga o'yin taklifi yuborildi`,
-                        buttons: [{type: 'ok'}]
-                    });
-                }
-            }
-        }
-
-        function showTab(tab) {
-            document.getElementById('game-section').style.display = tab === 'game' ? 'block' : 'none';
-            document.getElementById('friends-section').style.display = tab === 'friends' ? 'block' : 'none';
-
-            document.querySelectorAll('.tab')[0].classList.toggle('active', tab === 'game');
-            document.querySelectorAll('.tab')[1].classList.toggle('active', tab === 'friends');
-
-            if (tab === 'friends') loadFriends();
-        }
-
-        function changeAIDifficulty() {
-            aiDifficulty = parseInt(document.getElementById('ai-level').value);
-            const levels = ['⭐ Boshlang\'ich', '⭐⭐ O\'rta', '⭐⭐⭐ Tajribali', '⭐⭐⭐⭐ Mutaxassis', '⭐⭐⭐⭐⭐ Usta'];
-            document.getElementById('opponent-level').innerHTML = levels[aiDifficulty - 1];
-        }
-
-        function playWithAI() {
-            gameMode = 'ai';
-            currentOpponent = null;
-            document.getElementById('opponent-name').innerHTML = 'AI Bot';
-            document.getElementById('opponent-avatar').innerHTML = '🤖';
-            document.getElementById('opponent-level').innerHTML = ['⭐', '⭐⭐', '⭐⭐⭐', '⭐⭐⭐⭐', '⭐⭐⭐⭐⭐'][aiDifficulty-1];
-            document.getElementById('ai-selector').style.display = 'flex';
-            showTab('game');
-            newGame();
-        }
-
-        function newGame() {
-            // Shashka doskasini tiklash
-            checkersBoard = [
-                [0,2,0,2,0,2,0,2],
-                [2,0,2,0,2,0,2,0],
-                [0,2,0,2,0,2,0,2],
-                [0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0],
-                [1,0,1,0,1,0,1,0],
-                [0,1,0,1,0,1,0,1],
-                [1,0,1,0,1,0,1,0]
-            ];
-
-            // Shaxmat doskasini tiklash
-            chessBoard = [
-                ['r','n','b','q','k','b','n','r'],
-                ['p','p','p','p','p','p','p','p'],
-                ['','','','','','','',''],
-                ['','','','','','','',''],
-                ['','','','','','','',''],
-                ['','','','','','','',''],
-                ['P','P','P','P','P','P','P','P'],
-                ['R','N','B','Q','K','B','N','R']
-            ];
-
-            currentPlayer = 1;
-            selectedRow = -1;
-            selectedCol = -1;
-            possibleMoves = [];
-            gameOver = false;
-            document.getElementById('status').innerHTML = gameType === 'chess'
-                ? '⚪ Sizning navbatingiz (Oq)'
-                : '⚪ Sizning navbatingiz';
-            renderBoard();
-        }
-
-        function exitGame() {
-            if (tg) {
-                tg.close();
-            } else {
-                alert('O\'yindan chiqish');
-            }
-        }
-
-        // Boshlang'ich sozlash
-        document.getElementById('current-user-name').innerHTML = currentUser.name;
-        document.getElementById('current-user-avatar').innerHTML = currentUser.avatar;
-
-        renderBoard();
-        loadFriends();
-    </script>
+    function exitGame() { tg.close(); }
+    render();
+</script>
 </body>
 </html>

@@ -2,122 +2,128 @@
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shashka O'yini</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Shashka & Shaxmat Online</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
+            background: #1a252f;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 10px;
+            min-height: 100vh;
+            color: white;
+            padding: 12px;
         }
 
         .game-container {
-            max-width: 600px;
             width: 100%;
-            background: white;
-            border-radius: 20px;
-            padding: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 400px;
         }
 
-        .header {
+        .game-title {
+            text-align: center;
+            font-size: 32px;
+            font-weight: bold;
+            color: #f1c40f;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(241, 196, 15, 0.3);
+        }
+
+        .players-panel {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 10px;
-        }
-
-        .game-info {
-            font-size: 18px;
-            font-weight: bold;
-            color: #333;
-        }
-
-        .turn-indicator {
-            padding: 8px 15px;
-            background: #4CAF50;
-            color: white;
+            background: #2c3e50;
+            padding: 15px;
             border-radius: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #3e4f5f;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .player-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            flex: 1;
+        }
+
+        .player-label {
+            font-size: 12px;
+            color: #bdc3c7;
+            text-transform: uppercase;
+        }
+
+        .player-name {
+            font-weight: bold;
+            font-size: 18px;
+            color: #ecf0f1;
+            max-width: 120px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .player-rating {
             font-size: 14px;
+            color: #f1c40f;
             font-weight: bold;
         }
 
-        .turn-indicator.ai-turn {
-            background: #f39c12;
+        .vs-badge {
+            background: #e74c3c;
+            padding: 5px 15px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 14px;
+            color: white;
+            box-shadow: 0 3px 8px rgba(231, 76, 60, 0.4);
+        }
+
+        .board-wrapper {
+            background: #3e2723;
+            padding: 10px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            margin-bottom: 20px;
         }
 
         .board {
             display: grid;
             grid-template-columns: repeat(8, 1fr);
-            aspect-ratio: 1;
-            background: #deb887;
-            border: 3px solid #8b4513;
+            aspect-ratio: 1/1;
+            border: 3px solid #2b1d1a;
             border-radius: 10px;
             overflow: hidden;
-            margin-bottom: 20px;
         }
 
         .cell {
-            aspect-ratio: 1;
             display: flex;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
             cursor: pointer;
             position: relative;
         }
 
-        .cell.light {
-            background: #f0d9b5;
+        .light {
+            background: #d7b899;
         }
 
-        .cell.dark {
-            background: #b58863;
-        }
-
-        .cell.selected {
-            background: #7ec850 !important;
-            box-shadow: inset 0 0 0 3px #ffd700;
-        }
-
-        .cell.valid-move {
-            background: #90EE90 !important;
-            position: relative;
-        }
-
-        .cell.valid-move::after {
-            content: '';
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            background: rgba(0, 255, 0, 0.5);
-            border-radius: 50%;
-            pointer-events: none;
-        }
-
-        .cell.valid-capture {
-            background: #ff9999 !important;
-        }
-
-        .cell.valid-capture::after {
-            content: '⚡';
-            position: absolute;
-            font-size: 20px;
-            color: red;
-            pointer-events: none;
+        .dark {
+            background: #795548;
         }
 
         .piece {
@@ -125,80 +131,151 @@
             height: 80%;
             border-radius: 50%;
             display: flex;
-            justify-content: center;
             align-items: center;
-            font-size: 24px;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.3);
-            transition: all 0.2s;
+            justify-content: center;
             cursor: pointer;
             position: relative;
+            transition: all 0.2s ease;
+            font-size: 28px;
+        }
+
+        .piece.white {
+            background: #ecf0f1;
+            box-shadow: 0 4px 0 #bdc3c7;
+            color: #2c3e50;
         }
 
         .piece.black {
             background: #2c3e50;
-            color: white;
-            border: 2px solid #95a5a6;
-        }
-
-        .piece.red {
-            background: #c0392b;
-            color: white;
-            border: 2px solid #e74c3c;
-        }
-
-        .piece.king {
-            position: relative;
+            box-shadow: 0 4px 0 #1a252f;
+            color: #ecf0f1;
         }
 
         .piece.king::after {
             content: '👑';
+            font-size: 22px;
             position: absolute;
-            font-size: 20px;
-            color: gold;
-            text-shadow: 1px 1px 2px black;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
         }
 
-        .controls {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin-top: 20px;
+        .selected {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px #f1c40f;
+            z-index: 10;
         }
 
-        button {
-            padding: 12px 30px;
-            border: none;
-            border-radius: 25px;
-            font-size: 16px;
-            font-weight: bold;
+        .hint {
+            width: 16px;
+            height: 16px;
+            background: #2ecc71;
+            border-radius: 50%;
             cursor: pointer;
-            transition: all 0.3s;
+            animation: pulse 1.5s infinite;
+            border: 2px solid white;
+            box-shadow: 0 0 10px #2ecc71;
+            position: absolute;
+            z-index: 5;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.3); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.8; }
+        }
+
+        .status-bar {
+            background: #2c3e50;
+            padding: 15px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: bold;
+            font-size: 18px;
+            color: #f1c40f;
+            border: 1px solid #3e4f5f;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+        }
+
+        .buttons-panel {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            flex: 1;
+            min-width: 120px;
+            padding: 16px;
+            border: none;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:active {
+            transform: scale(0.97);
+        }
+
+        .btn-exit {
+            background: #c0392b;
+            color: white;
+            box-shadow: 0 5px 0 #962d22;
+        }
+
+        .btn-restart {
+            background: #27ae60;
+            color: white;
+            box-shadow: 0 5px 0 #1e8449;
+        }
+
+        .btn-invite {
             background: #3498db;
             color: white;
-            flex: 1;
-            max-width: 150px;
+            box-shadow: 0 5px 0 #2980b9;
         }
 
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        .room-info {
+            background: #34495e;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            border: 2px dashed #f1c40f;
+            display: none;
         }
 
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
+        .room-code-label {
+            font-size: 13px;
+            color: #bdc3c7;
+            margin-bottom: 5px;
         }
 
-        button.exit {
-            background: #e74c3c;
+        .room-code {
+            font-size: 36px;
+            font-weight: bold;
+            letter-spacing: 8px;
+            color: #f1c40f;
+            font-family: monospace;
         }
 
-        button.restart {
-            background: #f39c12;
+        .ai-info {
+            background: #34495e;
+            padding: 10px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            border: 1px solid #f1c40f;
+            color: #f1c40f;
+            font-size: 14px;
+            display: none;
         }
 
         .modal {
@@ -208,608 +285,556 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.5);
-            justify-content: center;
-            align-items: center;
+            background: rgba(0,0,0,0.8);
             z-index: 1000;
-        }
-
-        .modal.active {
-            display: flex;
+            backdrop-filter: blur(5px);
         }
 
         .modal-content {
-            background: white;
-            padding: 30px;
-            border-radius: 20px;
-            text-align: center;
-            max-width: 400px;
+            background: #2c3e50;
+            margin: 5% auto;
+            padding: 20px;
             width: 90%;
-            animation: slideIn 0.3s ease;
+            max-width: 400px;
+            border-radius: 15px;
+            max-height: 80%;
+            overflow-y: auto;
+            border: 2px solid #f1c40f;
         }
 
-        @keyframes slideIn {
-            from {
-                transform: translateY(-50px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        .modal-title {
+        .modal h3 {
+            text-align: center;
+            color: #f1c40f;
+            margin-bottom: 15px;
             font-size: 24px;
-            margin-bottom: 20px;
-            color: #333;
         }
 
-        .modal-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin-top: 20px;
-        }
-
-        .modal-btn {
-            padding: 10px 30px;
-            border: none;
+        .search-box {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 2px solid #3e4f5f;
             border-radius: 10px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .modal-btn.cancel {
-            background: #95a5a6;
+            background: #34495e;
             color: white;
+            font-size: 16px;
         }
 
-        .modal-btn.confirm {
+        .search-box::placeholder {
+            color: #bdc3c7;
+        }
+
+        .friends-list {
+            min-height: 200px;
+        }
+
+        .friend-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #3e4f5f;
+            padding: 12px 0;
+        }
+
+        .friend-info {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .friend-name {
+            font-weight: bold;
+            color: #ecf0f1;
+        }
+
+        .friend-status {
+            font-size: 12px;
+        }
+
+        .friend-status.online {
+            color: #2ecc71;
+        }
+
+        .friend-status.offline {
+            color: #e74c3c;
+        }
+
+        .friend-rating {
+            font-size: 13px;
+            color: #f1c40f;
+        }
+
+        .invite-btn {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .invite-btn:active {
+            transform: scale(0.95);
+            background: #1e8449;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #bdc3c7;
+            padding: 30px 20px;
+        }
+
+        .empty-state .emoji {
+            font-size: 48px;
+            margin-bottom: 10px;
+            opacity: 0.5;
+        }
+
+        .empty-state p {
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .close-modal {
+            width: 100%;
+            margin-top: 15px;
+            padding: 12px;
             background: #e74c3c;
             color: white;
-        }
-
-        .modal-btn.confirm:hover {
-            background: #c0392b;
-        }
-
-        .winner-modal .modal-content {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .winner-modal .modal-title {
-            color: white;
-        }
-
-        .winner-modal .modal-btn.confirm {
-            background: #f39c12;
-            color: white;
-        }
-
-        .winner-modal .modal-btn.cancel {
-            background: rgba(255,255,255,0.2);
-            color: white;
-        }
-
-        @media (max-width: 500px) {
-            .game-info {
-                font-size: 14px;
-            }
-
-            .turn-indicator {
-                font-size: 12px;
-                padding: 5px 10px;
-            }
-
-            .piece {
-                font-size: 16px;
-            }
-
-            .piece.king::after {
-                font-size: 14px;
-            }
-
-            button {
-                padding: 10px 20px;
-                font-size: 14px;
-            }
-
-            .modal-content {
-                padding: 20px;
-            }
-
-            .modal-title {
-                font-size: 20px;
-            }
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
     <div class="game-container">
-        <div class="header">
-            <div class="game-info">
-                <span id="gameMode">🤖 AI botga qarshi o'ynamoqdasiz</span>
+        <div class="game-title" id="gameTitle">SHAHKA ONLINE</div>
+
+        <div class="players-panel">
+            <div class="player-section">
+                <span class="player-label">SIZ</span>
+                <span class="player-name" id="playerName">O'yinchi</span>
+                <span class="player-rating" id="playerRating">★ 1200</span>
             </div>
-            <div class="turn-indicator" id="turnIndicator">Sizning navbatingiz</div>
+            <div class="vs-badge" id="vsBadge">VS</div>
+            <div class="player-section">
+                <span class="player-label" id="opponentLabel">RAQIB</span>
+                <span class="player-name" id="opponentName">Tanlanmagan</span>
+                <span class="player-rating" id="opponentRating">★ 0</span>
+            </div>
         </div>
 
-        <div class="board" id="board"></div>
+        <div id="aiInfo" class="ai-info">
+            🤖 AI botga qarshi o'ynamoqdasiz
+        </div>
 
-        <div class="controls">
-            <button class="exit" id="exitBtn">Chiqish</button>
-            <button class="restart" id="restartBtn">Qayta boshlash</button>
+        <div id="roomInfo" class="room-info">
+            <div class="room-code-label">XONA KODI</div>
+            <div class="room-code" id="roomCode">------</div>
+        </div>
+
+        <div class="board-wrapper">
+            <div id="board" class="board"></div>
+        </div>
+
+        <div id="status" class="status-bar">⚪ Sizning navbatingiz</div>
+
+        <div class="buttons-panel">
+            <button class="btn btn-exit" onclick="exitGame()">
+                <span>🚪</span> Chiqish
+            </button>
+            <button id="inviteBtn" class="btn btn-invite" onclick="openInviteModal()" style="display: none;">
+                <span>👥</span> Do'st taklif qilish
+            </button>
+            <button class="btn btn-restart" onclick="restartGame()">
+                <span>🔄</span> Qayta boshlash
+            </button>
         </div>
     </div>
 
-    <!-- Chiqish modal oynasi -->
-    <div class="modal" id="exitModal">
+    <!-- Do'stlar ro'yxati modali -->
+    <div id="friendsModal" class="modal">
         <div class="modal-content">
-            <div class="modal-title">🚪 O'yindan chiqish</div>
-            <p>O'yindan chiqishni xohlaysizmi?</p>
-            <div class="modal-buttons">
-                <button class="modal-btn cancel" id="cancelExit">Bekor qilish</button>
-                <button class="modal-btn confirm" id="confirmExit">Chiqish</button>
+            <h3>👥 Do'stlar ro'yxati</h3>
+            <input type="text" class="search-box" id="friendSearch" placeholder="Ism yoki username..." onkeyup="searchFriends()">
+            <div id="friendsList" class="friends-list">
+                <div class="empty-state">
+                    <div class="emoji">😕</div>
+                    <p>Hozircha do'stlar yo'q<br>Botga hali hech kim a'zo bo'lmagan</p>
+                </div>
             </div>
-        </div>
-    </div>
-
-    <!-- G'olib modal oynasi -->
-    <div class="modal winner-modal" id="winnerModal">
-        <div class="modal-content">
-            <div class="modal-title" id="winnerTitle">🎉 Tabriklaymiz!</div>
-            <p id="winnerMessage">Siz yutdingiz!</p>
-            <div class="modal-buttons">
-                <button class="modal-btn confirm" id="playAgainBtn">Qayta o'ynash</button>
-                <button class="modal-btn cancel" id="closeWinnerModal">Yopish</button>
-            </div>
+            <button class="close-modal" onclick="closeInviteModal()">Yopish</button>
         </div>
     </div>
 
     <script>
-        // URL parametrlarini olish
-        const urlParams = new URLSearchParams(window.location.search);
-        const userId = urlParams.get('user') || 'unknown';
-        const userName = urlParams.get('name') || 'Player';
-        const gameType = urlParams.get('game') || 'checkers';
-        const mode = urlParams.get('mode') || 'ai';
-        const roomCode = urlParams.get('room');
-        const playerRole = urlParams.get('player') || 'host';
+        const tg = Telegram.WebApp;
+        tg.expand();
+        tg.ready();
 
-        // O'yin holati
-        let board = [];
-        let currentPlayer = 'red'; // qizil har doim birinchi boshlaydi
-        let selectedPiece = null;
-        let validMoves = [];
-        let gameActive = true;
-        let aiThinking = false;
+        const params = new URLSearchParams(window.location.search);
+        const userId = params.get('user');
+        const userName = params.get('name') || 'Siz';
+        const roomCode = params.get('room');
+        const mode = params.get('mode');
+        const gameType = params.get('game') || 'checkers';
+        const playerType = params.get('player');
 
-        // DOM elementlar
-        const boardElement = document.getElementById('board');
-        const turnIndicator = document.getElementById('turnIndicator');
-        const gameModeElement = document.getElementById('gameMode');
-        const exitBtn = document.getElementById('exitBtn');
-        const restartBtn = document.getElementById('restartBtn');
-        const exitModal = document.getElementById('exitModal');
-        const cancelExit = document.getElementById('cancelExit');
-        const confirmExit = document.getElementById('confirmExit');
-        const winnerModal = document.getElementById('winnerModal');
-        const winnerTitle = document.getElementById('winnerTitle');
-        const winnerMessage = document.getElementById('winnerMessage');
-        const playAgainBtn = document.getElementById('playAgainBtn');
-        const closeWinnerModal = document.getElementById('closeWinnerModal');
+        let currentPlayer = 1;
+        let selected = null;
+        let moves = [];
+        let gameOver = false;
+        let users = [];
 
-        // O'yin rejimini ko'rsatish
-        if (mode === 'ai') {
-            gameModeElement.textContent = '🤖 AI botga qarshi o\'ynamoqdasiz';
-        } else if (roomCode) {
-            if (playerRole === 'host') {
-                gameModeElement.textContent = `👥 Xona egasi (${roomCode})`;
-            } else {
-                gameModeElement.textContent = `👥 Mehmon (${roomCode})`;
+        let board = [
+            [0,2,0,2,0,2,0,2],
+            [2,0,2,0,2,0,2,0],
+            [0,2,0,2,0,2,0,2],
+            [0,0,0,0,0,0,0,0],
+            [0,0,0,0,0,0,0,0],
+            [1,0,1,0,1,0,1,0],
+            [0,1,0,1,0,1,0,1],
+            [1,0,1,0,1,0,1,0]
+        ];
+
+        window.onload = function() {
+            if (gameType === 'chess') {
+                document.getElementById('gameTitle').textContent = 'SHAXMAT ONLINE';
+            }
+
+            if (mode === 'ai') {
+                document.getElementById('opponentName').textContent = 'AI Bot';
+                document.getElementById('opponentRating').textContent = '★ 1200';
+                document.getElementById('opponentLabel').textContent = 'AI BOT';
+                document.getElementById('aiInfo').style.display = 'block';
+                document.getElementById('roomInfo').style.display = 'none';
+            }
+            else if (roomCode) {
+                document.getElementById('roomInfo').style.display = 'block';
+                document.getElementById('roomCode').textContent = roomCode;
+                document.getElementById('aiInfo').style.display = 'none';
+
+                if (playerType === 'host') {
+                    document.getElementById('opponentName').textContent = 'Do\'st (kutilmoqda)';
+                    document.getElementById('inviteBtn').style.display = 'flex';
+                } else {
+                    document.getElementById('opponentName').textContent = 'Do\'st';
+                }
+            }
+
+            document.getElementById('playerName').textContent = userName;
+            render();
+            updateStatus();
+        };
+
+        function restartGame() {
+            board = [
+                [0,2,0,2,0,2,0,2],
+                [2,0,2,0,2,0,2,0],
+                [0,2,0,2,0,2,0,2],
+                [0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0],
+                [1,0,1,0,1,0,1,0],
+                [0,1,0,1,0,1,0,1],
+                [1,0,1,0,1,0,1,0]
+            ];
+            currentPlayer = 1;
+            selected = null;
+            moves = [];
+            gameOver = false;
+            render();
+            updateStatus();
+        }
+
+        function exitGame() {
+            if (confirm("O'yindan chiqishni xohlaysizmi?")) {
+                tg.close();
             }
         }
 
-        // Boshlang'ich taxta
-        function initBoard() {
-            board = [];
-            for (let row = 0; row < 8; row++) {
-                board[row] = [];
-                for (let col = 0; col < 8; col++) {
-                    board[row][col] = null;
-                }
-            }
+        function openInviteModal() {
+            document.getElementById('friendsModal').style.display = 'block';
+            document.getElementById('friendsList').innerHTML = `
+                <div class="empty-state">
+                    <div class="emoji">⏳</div>
+                    <p>Do'stlar ro'yxati yuklanmoqda...</p>
+                </div>
+            `;
 
-            // Qizil toshlar (yuqori qism)
-            for (let row = 0; row < 3; row++) {
-                for (let col = 0; col < 8; col++) {
-                    if ((row + col) % 2 === 1) {
-                        board[row][col] = { color: 'red', isKing: false };
-                    }
-                }
-            }
-
-            // Qora toshlar (pastki qism)
-            for (let row = 5; row < 8; row++) {
-                for (let col = 0; col < 8; col++) {
-                    if ((row + col) % 2 === 1) {
-                        board[row][col] = { color: 'black', isKing: false };
-                    }
-                }
-            }
-
-            currentPlayer = 'red';
-            selectedPiece = null;
-            validMoves = [];
-            gameActive = true;
-            aiThinking = false;
-            updateTurnIndicator();
-            renderBoard();
+            tg.sendData(JSON.stringify({
+                action: 'get_users',
+                user_id: userId
+            }));
         }
 
-        // Taxtani chizish
-        function renderBoard() {
-            boardElement.innerHTML = '';
+        function updateFriendsList(usersData) {
+            users = usersData;
+            const list = document.getElementById('friendsList');
+            const searchTerm = document.getElementById('friendSearch').value.toLowerCase();
 
-            for (let row = 0; row < 8; row++) {
-                for (let col = 0; col < 8; col++) {
+            let filteredUsers = users;
+            if (searchTerm) {
+                filteredUsers = users.filter(u =>
+                    u.name.toLowerCase().includes(searchTerm) ||
+                    (u.username && u.username.toLowerCase().includes(searchTerm))
+                );
+            }
+
+            if (filteredUsers.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <div class="emoji">😕</div>
+                        <p>${searchTerm ? 'Hech narsa topilmadi' : 'Hozircha do\'stlar yo\'q'}</p>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = '';
+            filteredUsers.forEach(u => {
+                const div = document.createElement('div');
+                div.className = 'friend-item';
+                div.innerHTML = `
+                    <div class="friend-info">
+                        <span class="friend-name">${u.name}</span>
+                        <span class="friend-rating">★ ${u.rating}</span>
+                        <span class="friend-status ${u.online ? 'online' : 'offline'}">
+                            ${u.online ? '🟢 Online' : '⚪ Offline'}
+                        </span>
+                    </div>
+                    <button class="invite-btn" onclick="sendInvite(${u.id})">
+                        Taklif qilish
+                    </button>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function searchFriends() {
+            updateFriendsList(users);
+        }
+
+        function sendInvite(friendId) {
+            tg.sendData(JSON.stringify({
+                action: 'invite',
+                friend_id: friendId,
+                room_code: roomCode,
+                from_name: userName,
+                game_type: gameType
+            }));
+            alert("✅ Taklif yuborildi!");
+            closeInviteModal();
+        }
+
+        function closeInviteModal() {
+            document.getElementById('friendsModal').style.display = 'none';
+            document.getElementById('friendSearch').value = '';
+        }
+
+        function render() {
+            const boardEl = document.getElementById('board');
+            boardEl.innerHTML = '';
+
+            for (let r = 0; r < 8; r++) {
+                for (let c = 0; c < 8; c++) {
                     const cell = document.createElement('div');
-                    cell.className = `cell ${(row + col) % 2 === 0 ? 'light' : 'dark'}`;
-                    cell.dataset.row = row;
-                    cell.dataset.col = col;
+                    cell.className = `cell ${(r + c) % 2 === 0 ? 'light' : 'dark'}`;
+                    cell.setAttribute('data-row', r);
+                    cell.setAttribute('data-col', c);
 
-                    // Tanlangan katakni belgilash
-                    if (selectedPiece && selectedPiece.row === row && selectedPiece.col === col) {
-                        cell.classList.add('selected');
-                    }
+                    if (board[r][c] > 0) {
+                        const piece = document.createElement('div');
+                        piece.className = `piece ${board[r][c] % 2 === 1 ? 'white' : 'black'}`;
 
-                    // Yurish mumkin bo'lgan kataklarni belgilash
-                    if (validMoves.some(move => move.row === row && move.col === col)) {
-                        const move = validMoves.find(m => m.row === row && m.col === col);
-                        if (move.isCapture) {
-                            cell.classList.add('valid-capture');
-                        } else {
-                            cell.classList.add('valid-move');
+                        if (board[r][c] > 2) {
+                            piece.classList.add('king');
+                        }
+
+                        if (selected && selected.r === r && selected.c === c) {
+                            piece.classList.add('selected');
+                        }
+
+                        if (currentPlayer === 1 && !gameOver) {
+                            if (board[r][c] === 1 || board[r][c] === 3) {
+                                piece.onclick = () => selectPiece(r, c);
+                            }
+                        }
+
+                        cell.appendChild(piece);
+                    } else {
+                        if (!gameOver) {
+                            cell.onclick = () => handleEmptyCellClick(r, c);
                         }
                     }
 
-                    // Toshni qo'shish
-                    const piece = board[row][col];
-                    if (piece) {
-                        const pieceDiv = document.createElement('div');
-                        pieceDiv.className = `piece ${piece.color} ${piece.isKing ? 'king' : ''}`;
-                        cell.appendChild(pieceDiv);
-                    }
+                    boardEl.appendChild(cell);
+                }
+            }
 
-                    cell.addEventListener('click', () => handleCellClick(row, col));
-                    boardElement.appendChild(cell);
+            renderHints();
+        }
+
+        function handleEmptyCellClick(r, c) {
+            const hintExists = moves.some(m => m.tr === r && m.tc === c);
+            if (hintExists) {
+                const move = moves.find(m => m.tr === r && m.tc === c);
+                if (move) {
+                    doMove(move);
                 }
             }
         }
 
-        // Yurishlarni tekshirish
-        function getValidMoves(row, col) {
-            const piece = board[row][col];
-            if (!piece || piece.color !== currentPlayer || !gameActive || (mode === 'ai' && currentPlayer === 'black' && aiThinking)) {
-                return [];
-            }
+        function renderHints() {
+            document.querySelectorAll('.hint').forEach(h => h.remove());
 
-            const moves = [];
-            const directions = piece.isKing ? [[-1,-1], [-1,1], [1,-1], [1,1]] :
-                            (piece.color === 'red' ? [[1,-1], [1,1]] : [[-1,-1], [-1,1]]);
+            if (gameOver) return;
 
-            // Oddiy yurishlar
-            for (const [dr, dc] of directions) {
-                const newRow = row + dr;
-                const newCol = col + dc;
-
-                if (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8) {
-                    if (!board[newRow][newCol]) {
-                        moves.push({ row: newRow, col: newCol, isCapture: false });
-                    }
+            moves.forEach(m => {
+                const cells = document.querySelectorAll('.board .cell');
+                const index = m.tr * 8 + m.tc;
+                if (cells[index]) {
+                    const hint = document.createElement('div');
+                    hint.className = 'hint';
+                    cells[index].appendChild(hint);
                 }
-            }
+            });
+        }
 
-            // Urishlar
-            for (const [dr, dc] of directions) {
-                const jumpRow = row + dr * 2;
-                const jumpCol = col + dc * 2;
-                const midRow = row + dr;
-                const midCol = col + dc;
+        function selectPiece(r, c) {
+            if (currentPlayer !== 1) return;
+            if (gameOver) return;
 
-                if (jumpRow >= 0 && jumpRow < 8 && jumpCol >= 0 && jumpCol < 8) {
-                    const midPiece = board[midRow][midCol];
-                    if (midPiece && midPiece.color !== piece.color && !board[jumpRow][jumpCol]) {
+            selected = {r, c};
+            moves = getValidMoves(r, c);
+            render();
+        }
+
+        function getValidMoves(r, c) {
+            const piece = board[r][c];
+            const moves = [];
+            const isKing = piece > 2;
+            const isWhite = piece % 2 === 1;
+
+            const dirs = isKing ? [[-1,-1],[-1,1],[1,-1],[1,1]] : (isWhite ? [[-1,-1],[-1,1]] : [[1,-1],[1,1]]);
+
+            dirs.forEach(d => {
+                const nr = r + d[0];
+                const nc = c + d[1];
+                if (nr >= 0 && nr < 8 && nc >= 0 && nc < 8 && board[nr][nc] === 0) {
+                    moves.push({fr: r, fc: c, tr: nr, tc: nc, cap: false});
+                }
+
+                const jr = r + d[0] * 2;
+                const jc = c + d[1] * 2;
+                if (jr >= 0 && jr < 8 && jc >= 0 && jc < 8 && board[jr][jc] === 0) {
+                    const mid = board[r + d[0]][c + d[1]];
+                    if (mid > 0 && mid % 2 !== piece % 2) {
                         moves.push({
-                            row: jumpRow,
-                            col: jumpCol,
-                            isCapture: true,
-                            capturedRow: midRow,
-                            capturedCol: midCol
+                            fr: r, fc: c, tr: jr, tc: jc, cap: true,
+                            mr: r + d[0], mc: c + d[1]
                         });
                     }
                 }
-            }
+            });
 
             return moves;
         }
 
-        // Barcha mumkin bo'lgan urishlarni tekshirish
-        function hasAnyCapture(color) {
-            for (let row = 0; row < 8; row++) {
-                for (let col = 0; col < 8; col++) {
-                    const piece = board[row][col];
-                    if (piece && piece.color === color) {
-                        const moves = getValidMoves(row, col);
-                        if (moves.some(m => m.isCapture)) {
-                            return true;
-                        }
-                    }
-                }
-            }
-            return false;
-        }
-
-        // Katakka bosilganda
-        function handleCellClick(row, col) {
-            if (!gameActive || (mode === 'ai' && currentPlayer === 'black' && aiThinking)) {
-                return;
+        function doMove(m) {
+            if (m.cap) {
+                board[m.mr][m.mc] = 0;
             }
 
-            const piece = board[row][col];
+            board[m.tr][m.tc] = board[m.fr][m.fc];
+            board[m.fr][m.fc] = 0;
 
-            // Agar tosh tanlangan bo'lsa va yurish mumkin bo'lgan katak bo'lsa
-            if (selectedPiece && validMoves.some(move => move.row === row && move.col === col)) {
-                const move = validMoves.find(m => m.row === row && m.col === col);
-                makeMove(selectedPiece.row, selectedPiece.col, row, col, move);
-            }
-            // Agar tosh tanlanmagan bo'lsa va katakda tosh bo'lsa
-            else if (piece && piece.color === currentPlayer) {
-                // Faqat urish kerak bo'lgan holatda urish mumkin bo'lgan toshlarni tanlash
-                const hasCapture = hasAnyCapture(currentPlayer);
-                const moves = getValidMoves(row, col);
+            if (m.tr === 0 && board[m.tr][m.tc] === 1) board[m.tr][m.tc] = 3;
+            if (m.tr === 7 && board[m.tr][m.tc] === 2) board[m.tr][m.tc] = 4;
 
-                if (hasCapture) {
-                    // Agar urish kerak bo'lsa, faqat ura oladigan toshlarni tanlash
-                    if (moves.some(m => m.isCapture)) {
-                        selectedPiece = { row, col };
-                        validMoves = moves;
-                    } else {
-                        selectedPiece = null;
-                        validMoves = [];
-                    }
-                } else {
-                    selectedPiece = { row, col };
-                    validMoves = moves;
-                }
-                renderBoard();
-            } else {
-                selectedPiece = null;
-                validMoves = [];
-                renderBoard();
-            }
-        }
+            selected = null;
+            moves = [];
+            currentPlayer = currentPlayer === 1 ? 2 : 1;
 
-        // Yurishni amalga oshirish
-        function makeMove(fromRow, fromCol, toRow, toCol, move) {
-            const piece = board[fromRow][fromCol];
+            updateStatus();
+            render();
 
-            // Toshni ko'chirish
-            board[toRow][toCol] = { ...piece };
-            board[fromRow][fromCol] = null;
-
-            // Agar urish bo'lsa, raqib toshini olib tashlash
-            if (move.isCapture) {
-                board[move.capturedRow][move.capturedCol] = null;
+            if (mode === 'ai' && currentPlayer === 2 && !gameOver) {
+                setTimeout(aiMove, 500);
             }
 
-            // Shohga aylantirish (damka)
-            if ((piece.color === 'red' && toRow === 7) || (piece.color === 'black' && toRow === 0)) {
-                board[toRow][toCol].isKing = true;
-            }
-
-            // Yana urish imkoniyati bormi?
-            const nextMoves = getValidMoves(toRow, toCol);
-            const canCaptureAgain = nextMoves.some(m => m.isCapture);
-
-            if (canCaptureAgain && move.isCapture) {
-                selectedPiece = { row: toRow, col: toCol };
-                validMoves = nextMoves;
-                renderBoard();
-                return;
-            }
-
-            // Navbatni almashtirish
-            currentPlayer = currentPlayer === 'red' ? 'black' : 'red';
-            selectedPiece = null;
-            validMoves = [];
-
-            // O'yin tugaganligini tekshirish
             checkGameOver();
-
-            renderBoard();
-            updateTurnIndicator();
-
-            // AI navbati
-            if (mode === 'ai' && currentPlayer === 'black' && gameActive) {
-                makeAIMove();
-            }
         }
 
-        // AI yurishi
-        function makeAIMove() {
-            aiThinking = true;
-            updateTurnIndicator();
-
-            setTimeout(() => {
-                if (!gameActive) {
-                    aiThinking = false;
-                    return;
-                }
-
-                // Barcha qora toshlarni topish
-                const blackPieces = [];
-                for (let row = 0; row < 8; row++) {
-                    for (let col = 0; col < 8; col++) {
-                        const piece = board[row][col];
-                        if (piece && piece.color === 'black') {
-                            blackPieces.push({ row, col, piece });
-                        }
-                    }
-                }
-
-                // Barcha mumkin bo'lgan yurishlarni topish
-                let allMoves = [];
-                for (const piece of blackPieces) {
-                    const moves = getValidMoves(piece.row, piece.col);
-                    for (const move of moves) {
-                        allMoves.push({
-                            fromRow: piece.row,
-                            fromCol: piece.col,
-                            toRow: move.row,
-                            toCol: move.col,
-                            move: move
-                        });
-                    }
-                }
-
-                if (allMoves.length > 0) {
-                    // Urishlarni ustun qo'yish
-                    const captureMoves = allMoves.filter(m => m.move.isCapture);
-                    const selectedMove = captureMoves.length > 0 ?
-                        captureMoves[Math.floor(Math.random() * captureMoves.length)] :
-                        allMoves[Math.floor(Math.random() * allMoves.length)];
-
-                    makeMove(selectedMove.fromRow, selectedMove.fromCol,
-                            selectedMove.toRow, selectedMove.toCol, selectedMove.move);
-                }
-
-                aiThinking = false;
-                updateTurnIndicator();
-            }, 500);
-        }
-
-        // O'yin tugaganligini tekshirish
-        function checkGameOver() {
-            const redPieces = [];
-            const blackPieces = [];
-
-            for (let row = 0; row < 8; row++) {
-                for (let col = 0; col < 8; col++) {
-                    const piece = board[row][col];
-                    if (piece) {
-                        if (piece.color === 'red') redPieces.push({ row, col });
-                        else blackPieces.push({ row, col });
+        function aiMove() {
+            const aiMoves = [];
+            for (let r = 0; r < 8; r++) {
+                for (let c = 0; c < 8; c++) {
+                    if (board[r][c] === 2 || board[r][c] === 4) {
+                        aiMoves.push(...getValidMoves(r, c));
                     }
                 }
             }
 
-            // Yurish imkoniyatini tekshirish
-            const redMoves = [];
-            const blackMoves = [];
-
-            for (const p of redPieces) {
-                redMoves.push(...getValidMoves(p.row, p.col));
-            }
-
-            for (const p of blackPieces) {
-                blackMoves.push(...getValidMoves(p.row, p.col));
-            }
-
-            if (redPieces.length === 0 || blackMoves.length === 0) {
-                gameActive = false;
-                showWinner('black');
-            } else if (blackPieces.length === 0 || redMoves.length === 0) {
-                gameActive = false;
-                showWinner('red');
+            if (aiMoves.length > 0) {
+                const captureMoves = aiMoves.filter(m => m.cap);
+                const move = captureMoves.length > 0 ?
+                    captureMoves[Math.floor(Math.random() * captureMoves.length)] :
+                    aiMoves[Math.floor(Math.random() * aiMoves.length)];
+                doMove(move);
             }
         }
 
-        // G'olibni ko'rsatish
-        function showWinner(winner) {
-            if (winner === 'red') {
-                winnerTitle.textContent = '🎉 Tabriklaymiz!';
-                winnerMessage.textContent = 'Siz yutdingiz!';
-            } else {
-                winnerTitle.textContent = '😔 Yutqazdingiz';
-                winnerMessage.textContent = 'AI bot yutdi. Qaytadan urinib ko\'ring!';
-            }
-            winnerModal.classList.add('active');
-        }
-
-        // Navbat indikatorini yangilash
-        function updateTurnIndicator() {
-            if (!gameActive) return;
-
+        function updateStatus() {
+            const statusEl = document.getElementById('status');
             if (mode === 'ai') {
-                if (currentPlayer === 'red') {
-                    turnIndicator.textContent = 'Sizning navbatingiz';
-                    turnIndicator.className = 'turn-indicator';
-                } else {
-                    if (aiThinking) {
-                        turnIndicator.textContent = '🤖 AI o\'ylamoqda...';
-                    } else {
-                        turnIndicator.textContent = '🤖 AI navbati';
-                    }
-                    turnIndicator.classList.add('ai-turn');
+                statusEl.innerHTML = currentPlayer === 1 ? "⚪ Sizning navbatingiz" : "⚫ AI o'ylamoqda...";
+            } else {
+                statusEl.innerHTML = currentPlayer === 1 ? "⚪ Sizning navbatingiz" : "⚫ Raqib navbati";
+            }
+        }
+
+        function checkGameOver() {
+            let whiteExists = false;
+            let blackExists = false;
+
+            for (let r = 0; r < 8; r++) {
+                for (let c = 0; c < 8; c++) {
+                    if (board[r][c] === 1 || board[r][c] === 3) whiteExists = true;
+                    if (board[r][c] === 2 || board[r][c] === 4) blackExists = true;
                 }
             }
+
+            if (!whiteExists) {
+                document.getElementById('status').innerHTML = "⚫ Raqib yutdi!";
+                gameOver = true;
+                tg.sendData(JSON.stringify({
+                    action: 'game_over',
+                    winner_id: userId
+                }));
+            } else if (!blackExists) {
+                document.getElementById('status').innerHTML = "⚪ Siz yutdingiz!";
+                gameOver = true;
+                tg.sendData(JSON.stringify({
+                    action: 'game_over',
+                    winner_id: userId
+                }));
+            }
         }
 
-        // Chiqish tugmasi
-        exitBtn.addEventListener('click', () => {
-            exitModal.classList.add('active');
-        });
-
-        cancelExit.addEventListener('click', () => {
-            exitModal.classList.remove('active');
-        });
-
-        confirmExit.addEventListener('click', () => {
-            // Telegram WebApp ni yopish
-            if (window.Telegram && window.Telegram.WebApp) {
-                window.Telegram.WebApp.close();
-            } else {
-                // Test uchun
-                window.location.href = 'about:blank';
+        tg.onEvent('webAppData', (data) => {
+            try {
+                const response = JSON.parse(data.data);
+                if (Array.isArray(response)) {
+                    updateFriendsList(response);
+                }
+            } catch (e) {
+                console.error('Ma\'lumotni o\'qish xatosi:', e);
             }
         });
-
-        // Qayta boshlash
-        restartBtn.addEventListener('click', () => {
-            initBoard();
-        });
-
-        // O'yinni qayta boshlash
-        playAgainBtn.addEventListener('click', () => {
-            winnerModal.classList.remove('active');
-            initBoard();
-        });
-
-        closeWinnerModal.addEventListener('click', () => {
-            winnerModal.classList.remove('active');
-        });
-
-        // Modal oynani yopish (bekor qilish)
-        window.addEventListener('click', (e) => {
-            if (e.target === exitModal) {
-                exitModal.classList.remove('active');
-            }
-            if (e.target === winnerModal) {
-                winnerModal.classList.remove('active');
-            }
-        });
-
-        // Telegram WebApp integratsiyasi
-        if (window.Telegram && window.Telegram.WebApp) {
-            window.Telegram.WebApp.ready();
-            window.Telegram.WebApp.expand();
-        }
-
-        // O'yinni boshlash
-        initBoard();
     </script>
 </body>
 </html>

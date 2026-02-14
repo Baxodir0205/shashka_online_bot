@@ -120,11 +120,11 @@
         }
 
         .light {
-            background: #f5e6d3;  /* Och krem rangi */
+            background: #f5e6d3;
         }
 
         .dark {
-            background: #b06e4b;  /* To'q jigarrang */
+            background: #b06e4b;
         }
 
         .piece {
@@ -142,14 +142,14 @@
         }
 
         .piece.white {
-            background: #ffffff;  /* Sof oq */
+            background: #ffffff;
             border: 2px solid #e0e0e0;
             color: #333;
             box-shadow: 0 4px 0 #cccccc, 0 0 15px rgba(255,255,255,0.5);
         }
 
         .piece.black {
-            background: #222222;  /* To'q qora */
+            background: #222222;
             border: 2px solid #444444;
             color: #fff;
             box-shadow: 0 4px 0 #000000, 0 0 15px rgba(0,0,0,0.5);
@@ -220,18 +220,6 @@
             border: 1px solid #4a6782;
         }
 
-        .capture-warning {
-            background: #e74c3c;
-            color: white;
-            padding: 8px;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            font-size: 13px;
-            font-weight: bold;
-            text-align: center;
-            display: none;
-        }
-
         .buttons-panel {
             display: flex;
             gap: 10px;
@@ -278,6 +266,78 @@
             text-align: center;
             font-size: 13px;
             font-weight: bold;
+        }
+
+        .winner-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .winner-content {
+            background: #34495e;
+            padding: 25px;
+            border-radius: 25px;
+            text-align: center;
+            border: 3px solid #f1c40f;
+            max-width: 300px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .winner-content h2 {
+            color: #f1c40f;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .winner-content p {
+            color: white;
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+
+        .winner-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .winner-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .winner-btn.restart {
+            background: #27ae60;
+            color: white;
+        }
+
+        .winner-btn.exit {
+            background: #e67e22;
+            color: white;
         }
 
         .modal {
@@ -357,12 +417,8 @@
             </div>
         </div>
 
-        <div id="aiInfo" class="ai-info">
+        <div id="aiInfo" class="ai-info" style="display: none;">
             🤖 AI botga qarshi o'ynamoqdasiz
-        </div>
-
-        <div id="captureWarning" class="capture-warning">
-            ⚠️ Urish majburiy! Raqib donasini oling
         </div>
 
         <div class="board-wrapper">
@@ -378,6 +434,18 @@
             <button class="btn btn-restart" onclick="restartGame()">
                 <span>🔄</span> Qayta boshlash
             </button>
+        </div>
+    </div>
+
+    <!-- G'olib modal -->
+    <div id="winnerModal" class="winner-modal">
+        <div class="winner-content">
+            <h2>🏆 G'OLIB</h2>
+            <p id="winnerName">O'yinchi</p>
+            <div class="winner-buttons">
+                <button class="winner-btn restart" onclick="restartGameAfterWin()">🔄 Qayta</button>
+                <button class="winner-btn exit" onclick="closeWinnerModal()">🚪 Chiqish</button>
+            </div>
         </div>
     </div>
 
@@ -403,26 +471,37 @@
         const userId = params.get('user') || 'user_' + Math.random();
         const userName = params.get('name') || 'O\'yinchi';
         const mode = params.get('mode') || 'ai';
+        const roomCode = params.get('room');
+        const playerRole = params.get('player');
 
         // O'yin holati
         let board = [];
-        let currentPlayer = 1; // 1 - oq, 2 - qora
+        let currentPlayer = 1;
         let selectedPiece = null;
         let validMoves = [];
         let gameActive = true;
         let aiThinking = false;
         let mustCapturePieces = [];
+        let gameWinner = null;
 
         // DOM elementlar
         const boardElement = document.getElementById('board');
         const statusElement = document.getElementById('status');
-        const captureWarning = document.getElementById('captureWarning');
+        const winnerModal = document.getElementById('winnerModal');
+        const winnerName = document.getElementById('winnerName');
 
         // O'yinchi ma'lumotlarini o'rnatish
         document.getElementById('playerName').textContent = userName;
+
         if (mode === 'ai') {
             document.getElementById('opponentName').textContent = 'AI Bot';
             document.getElementById('aiInfo').style.display = 'block';
+        } else if (roomCode) {
+            if (playerRole === 'host') {
+                document.getElementById('opponentName').textContent = 'Kutilyapti...';
+            } else {
+                document.getElementById('opponentName').textContent = 'Do\'st';
+            }
         }
 
         // Boshlang'ich taxta
@@ -439,7 +518,6 @@
             ];
         }
 
-        // Taxtani chizish
         function renderBoard() {
             boardElement.innerHTML = '';
 
@@ -490,7 +568,6 @@
             showValidMoves();
         }
 
-        // Yurish mumkin bo'lgan joylarni ko'rsatish
         function showValidMoves() {
             document.querySelectorAll('.hint').forEach(h => h.remove());
 
@@ -507,7 +584,6 @@
             });
         }
 
-        // Donani tanlash
         function selectPiece(row, col) {
             if (!gameActive || currentPlayer !== 1) return;
 
@@ -516,7 +592,6 @@
 
             if (mustCapturePieces.length > 0) {
                 if (!mustCapturePieces.some(p => p.row === row && p.col === col)) {
-                    statusElement.innerHTML = "⚠️ Urish majburiy!";
                     return;
                 }
             }
@@ -530,7 +605,6 @@
             }
         }
 
-        // Katakni bosish
         function handleCellClick(row, col) {
             if (!selectedPiece || !gameActive || currentPlayer !== 1) return;
 
@@ -544,7 +618,6 @@
             }
         }
 
-        // Mumkin bo'lgan yurishlarni topish
         function getValidMoves(row, col) {
             const piece = board[row][col];
             if (piece === 0) return [];
@@ -553,14 +626,12 @@
             const isKing = (piece === 3 || piece === 4);
             const isWhite = (piece === 1 || piece === 3);
 
-            // Urishlarni topish
             const captureMoves = findCaptures(row, col, piece, isKing, isWhite);
 
             if (captureMoves.length > 0) {
                 return captureMoves;
             }
 
-            // Oddiy yurishlar (faqat urish majburiy bo'lmasa)
             if (mustCapturePieces.length === 0) {
                 const directions = isKing ? [[-1,-1], [-1,1], [1,-1], [1,1]]
                                         : (isWhite ? [[-1,-1], [-1,1]] : [[1,-1], [1,1]]);
@@ -588,7 +659,6 @@
             return moves;
         }
 
-        // Urish imkoniyatlarini topish
         function findCaptures(row, col, piece, isKing, isWhite) {
             const captures = [];
             const directions = [[-1,-1], [-1,1], [1,-1], [1,1]];
@@ -651,7 +721,6 @@
             return captures;
         }
 
-        // Yurishni amalga oshirish
         function makeMove(move) {
             const piece = board[move.fromRow][move.fromCol];
 
@@ -700,7 +769,6 @@
             }
         }
 
-        // Urish majburiyatini tekshirish
         function checkMustCapture() {
             mustCapturePieces = [];
 
@@ -717,11 +785,8 @@
                     }
                 }
             }
-
-            captureWarning.style.display = mustCapturePieces.length > 0 && currentPlayer === 1 ? 'block' : 'none';
         }
 
-        // AI yurishi
         function makeAIMove() {
             if (!gameActive || currentPlayer !== 2) return;
 
@@ -764,7 +829,8 @@
                     }
                 } else {
                     gameActive = false;
-                    statusElement.innerHTML = "⚪ Siz yutdingiz!";
+                    gameWinner = userName;
+                    showWinner(userName);
                 }
 
                 aiThinking = false;
@@ -772,7 +838,6 @@
             }, 500);
         }
 
-        // AI uchun yurishlarni topish
         function getValidMovesForAI(row, col) {
             const piece = board[row][col];
             if (piece === 0) return [];
@@ -810,7 +875,6 @@
             return moves;
         }
 
-        // AI ketma-ket urishi
         function checkAIContinueCapture(row, col) {
             const piece = board[row][col];
             if (!piece) return;
@@ -829,7 +893,6 @@
             }
         }
 
-        // O'yin tugaganligini tekshirish
         function checkGameOver() {
             let whiteExists = false;
             let blackExists = false;
@@ -851,31 +914,61 @@
 
             if (!whiteExists || !whiteMoves) {
                 gameActive = false;
-                statusElement.innerHTML = "⚫ Raqib yutdi!";
-                tg.sendData(JSON.stringify({ action: 'game_over', winner_id: 'ai' }));
+                gameWinner = 'AI Bot';
+                showWinner('AI Bot');
+
+                tg.sendData(JSON.stringify({
+                    action: 'game_over',
+                    user_id: userId,
+                    winner_id: 'ai',
+                    game_type: 'checkers'
+                }));
             } else if (!blackExists || !blackMoves) {
                 gameActive = false;
-                statusElement.innerHTML = "⚪ Siz yutdingiz!";
-                tg.sendData(JSON.stringify({ action: 'game_over', winner_id: userId }));
+                gameWinner = userName;
+                showWinner(userName);
+
+                tg.sendData(JSON.stringify({
+                    action: 'game_over',
+                    user_id: userId,
+                    winner_id: userId,
+                    game_type: 'checkers'
+                }));
             }
         }
 
-        // Statusni yangilash
+        function showWinner(winner) {
+            winnerName.textContent = winner;
+            winnerModal.style.display = 'flex';
+        }
+
+        function closeWinnerModal() {
+            winnerModal.style.display = 'none';
+        }
+
+        function restartGameAfterWin() {
+            winnerModal.style.display = 'none';
+            restartGame();
+        }
+
         function updateStatus() {
             if (!gameActive) return;
 
             if (mode === 'ai') {
                 if (currentPlayer === 1) {
-                    statusElement.innerHTML = mustCapturePieces.length > 0
-                        ? "⚠️ Raqib donasini oling"
-                        : "⚪ Sizning navbatingiz";
+                    statusElement.innerHTML = "⚪ Sizning navbatingiz";
                 } else {
                     statusElement.innerHTML = aiThinking ? "⚫ AI o'ylamoqda..." : "⚫ AI navbati";
+                }
+            } else {
+                if (currentPlayer === 1) {
+                    statusElement.innerHTML = "⚪ Sizning navbatingiz";
+                } else {
+                    statusElement.innerHTML = "⚫ Raqib navbati";
                 }
             }
         }
 
-        // Chiqish funksiyalari
         function showExitConfirm() {
             document.getElementById('exitModal').style.display = 'block';
         }
@@ -888,7 +981,6 @@
             tg.close();
         }
 
-        // Qayta boshlash
         function restartGame() {
             initBoard();
             currentPlayer = 1;
@@ -897,12 +989,11 @@
             gameActive = true;
             aiThinking = false;
             mustCapturePieces = [];
-            captureWarning.style.display = 'none';
+            gameWinner = null;
             renderBoard();
             updateStatus();
         }
 
-        // O'yinni boshlash
         initBoard();
         renderBoard();
     </script>

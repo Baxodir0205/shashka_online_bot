@@ -30,7 +30,6 @@
             max-width: 400px;
         }
 
-        /* Sarlavha */
         .game-title {
             text-align: center;
             font-size: 32px;
@@ -40,7 +39,6 @@
             text-shadow: 0 2px 10px rgba(241, 196, 15, 0.3);
         }
 
-        /* O'yinchilar paneli */
         .players-panel {
             display: flex;
             justify-content: space-between;
@@ -89,7 +87,6 @@
             box-shadow: 0 3px 8px rgba(231, 76, 60, 0.4);
         }
 
-        /* Doska */
         .board-wrapper {
             background: #3e2723;
             padding: 10px;
@@ -113,6 +110,7 @@
             justify-content: center;
             width: 100%;
             height: 100%;
+            cursor: pointer;
         }
 
         .light {
@@ -179,7 +177,6 @@
             100% { transform: scale(1); opacity: 0.8; }
         }
 
-        /* Status panel */
         .status-bar {
             background: #2c3e50;
             padding: 15px;
@@ -193,7 +190,6 @@
             box-shadow: 0 5px 10px rgba(0,0,0,0.2);
         }
 
-        /* Tugmalar paneli */
         .buttons-panel {
             display: flex;
             gap: 12px;
@@ -224,20 +220,12 @@
             box-shadow: 0 5px 0 #962d22;
         }
 
-        .btn-invite {
+        .btn-restart {
             background: #27ae60;
             color: white;
             box-shadow: 0 5px 0 #1e8449;
         }
 
-        .btn-invite:disabled {
-            background: #7f8c8d;
-            box-shadow: 0 5px 0 #5a6268;
-            cursor: not-allowed;
-            opacity: 0.7;
-        }
-
-        /* Xona kodi */
         .room-info {
             background: #34495e;
             padding: 15px;
@@ -245,6 +233,7 @@
             margin-bottom: 20px;
             text-align: center;
             border: 2px dashed #f1c40f;
+            display: none;
         }
 
         .room-code-label {
@@ -261,214 +250,59 @@
             font-family: monospace;
         }
 
-        /* Modal oyna - Do'stni taklif qilish */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.95);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .modal-content {
-            background: #2c3e50;
-            border-radius: 24px;
-            padding: 20px;
-            width: 90%;
-            max-width: 380px;
-            max-height: 80vh;
-            overflow-y: auto;
-            border: 2px solid #f1c40f;
-        }
-
-        .modal-header {
-            font-size: 22px;
-            font-weight: bold;
-            color: #f1c40f;
+        .ai-info {
+            background: #34495e;
+            padding: 10px;
+            border-radius: 15px;
+            margin-bottom: 20px;
             text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 15px;
-            border: none;
-            border-radius: 12px;
-            background: #34495e;
-            color: white;
-            font-size: 16px;
-            margin-bottom: 20px;
             border: 1px solid #f1c40f;
-        }
-
-        .search-input::placeholder {
-            color: #95a5a6;
-        }
-
-        .users-list {
-            margin-bottom: 20px;
-        }
-
-        .section-title {
+            color: #f1c40f;
             font-size: 14px;
-            color: #f1c40f;
-            margin: 15px 0 10px 0;
-            padding-left: 5px;
-        }
-
-        .user-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px;
-            background: #34495e;
-            border-radius: 12px;
-            margin-bottom: 8px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .user-item:active {
-            background: #3d566e;
-            transform: scale(0.98);
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            background: #2c3e50;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            border: 2px solid #f1c40f;
-        }
-
-        .user-details {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .user-name {
-            font-weight: bold;
-            font-size: 16px;
-        }
-
-        .user-rating {
-            font-size: 12px;
-            color: #f1c40f;
-        }
-
-        .online-badge {
-            background: #27ae60;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 11px;
-            color: white;
-        }
-
-        .offline-badge {
-            background: #7f8c8d;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 11px;
-            color: white;
-        }
-
-        .close-modal-btn {
-            width: 100%;
-            padding: 15px;
-            border: none;
-            border-radius: 12px;
-            background: #e74c3c;
-            color: white;
-            font-weight: bold;
-            font-size: 16px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-
-        .close-modal-btn:active {
-            background: #c0392b;
+            display: none;
         }
     </style>
 </head>
 <body>
     <div class="game-container">
-        <!-- Sarlavha -->
-        <div class="game-title">SHAHKA ONLINE</div>
+        <div class="game-title" id="gameTitle">SHAHKA ONLINE</div>
 
-        <!-- O'yinchilar paneli -->
         <div class="players-panel">
             <div class="player-section">
                 <span class="player-label">SIZ</span>
                 <span class="player-name" id="playerName">O'yinchi</span>
                 <span class="player-rating" id="playerRating">★ 1200</span>
             </div>
-
-            <div class="vs-badge">VS</div>
-
+            <div class="vs-badge" id="vsBadge">VS</div>
             <div class="player-section">
-                <span class="player-label">RAQIB</span>
+                <span class="player-label" id="opponentLabel">RAQIB</span>
                 <span class="player-name" id="opponentName">Tanlanmagan</span>
                 <span class="player-rating" id="opponentRating">★ 0</span>
             </div>
         </div>
 
-        <!-- Xona kodi (do'st bilan o'ynaganda ko'rinadi) -->
-        <div id="roomInfo" class="room-info" style="display: none;">
+        <div id="aiInfo" class="ai-info">
+            🤖 AI botga qarshi o'ynamoqdasiz
+        </div>
+
+        <div id="roomInfo" class="room-info">
             <div class="room-code-label">XONA KODI</div>
             <div class="room-code" id="roomCode">------</div>
         </div>
 
-        <!-- Doska -->
         <div class="board-wrapper">
             <div id="board" class="board"></div>
         </div>
 
-        <!-- Status panel -->
         <div id="status" class="status-bar">⚪ Sizning navbatingiz</div>
 
-        <!-- Tugmalar paneli -->
         <div class="buttons-panel">
             <button class="btn btn-exit" onclick="exitGame()">
                 <span>🚪</span> O'yindan chiqish
             </button>
-            <button class="btn btn-invite" id="inviteBtn" onclick="openInviteModal()">
-                <span>👥</span> Do'stni taklif qilish
+            <button class="btn btn-restart" onclick="restartGame()">
+                <span>🔄</span> Qayta boshlash
             </button>
-        </div>
-    </div>
-
-    <!-- Do'stni taklif qilish modali -->
-    <div id="inviteModal" class="modal-overlay">
-        <div class="modal-content">
-            <div class="modal-header">👥 Do'stni taklif qilish</div>
-
-            <input type="text" class="search-input" id="searchInput"
-                   placeholder="🔍 Ism yoki username bilan qidirish...">
-
-            <div class="users-list">
-                <div class="section-title">🟢 ONLINE</div>
-                <div id="onlineUsers"></div>
-
-                <div class="section-title">⚫ OFFLINE</div>
-                <div id="offlineUsers"></div>
-            </div>
-
-            <button class="close-modal-btn" onclick="closeInviteModal()">Yopish</button>
         </div>
     </div>
 
@@ -483,16 +317,41 @@
         const userId = params.get('user');
         const userName = params.get('name') || 'Siz';
         const roomCode = params.get('room');
-        const mode = params.get('mode'); // 'ai' yoki null
+        const mode = params.get('mode');
         const gameType = params.get('game') || 'checkers';
-        const playerType = params.get('player'); // 'host' yoki 'guest'
-        const isPublic = params.get('public'); // '1' yoki null
+        const playerType = params.get('player');
 
         // O'yin holati
         let currentPlayer = 1; // 1 = oq, 2 = qora
         let selected = null;
         let moves = [];
-        let invitedFriend = null;
+        let gameOver = false;
+
+        // Sarlavhani o'zgartirish
+        if (gameType === 'chess') {
+            document.getElementById('gameTitle').textContent = 'SHAXMAT ONLINE';
+        }
+
+        // AI rejimida
+        if (mode === 'ai') {
+            document.getElementById('opponentName').textContent = 'AI Bot';
+            document.getElementById('opponentRating').textContent = '★ 1200';
+            document.getElementById('opponentLabel').textContent = 'AI BOT';
+            document.getElementById('aiInfo').style.display = 'block';
+            document.getElementById('roomInfo').style.display = 'none';
+        }
+        // Do'st bilan o'ynaganda
+        else if (roomCode) {
+            document.getElementById('roomInfo').style.display = 'block';
+            document.getElementById('roomCode').textContent = roomCode;
+            document.getElementById('aiInfo').style.display = 'none';
+
+            if (playerType === 'host') {
+                document.getElementById('opponentName').textContent = 'Do\'st (kutilmoqda)';
+            } else {
+                document.getElementById('opponentName').textContent = 'Do\'st';
+            }
+        }
 
         // Shashka uchun boshlang'ich doska
         let board = [
@@ -506,145 +365,33 @@
             [1,0,1,0,1,0,1,0]
         ];
 
+        // Foydalanuvchi ismini ko'rsatish
+        document.getElementById('playerName').textContent = userName;
+
         // Sahifa yuklanganda
         window.onload = function() {
-            // Foydalanuvchi ismini ko'rsatish
-            document.getElementById('playerName').textContent = userName;
-
-            // Xona kodi bo'lsa ko'rsatish
-            if (roomCode) {
-                document.getElementById('roomInfo').style.display = 'block';
-                document.getElementById('roomCode').textContent = roomCode;
-            }
-
-            // AI rejimida
-            if (mode === 'ai') {
-                document.getElementById('opponentName').textContent = 'AI Bot';
-                document.getElementById('opponentRating').textContent = '★ 1200';
-                document.getElementById('inviteBtn').style.display = 'none'; // AI da do'stni taklif qilish tugmasi yo'q
-            }
-
-            // Do'st bilan o'ynaganda
-            if (roomCode && !mode) {
-                if (playerType === 'host') {
-                    document.getElementById('opponentName').textContent = 'Do\'st (kutilmoqda)';
-                } else {
-                    document.getElementById('opponentName').textContent = 'Do\'st';
-                }
-            }
-
-            // Foydalanuvchilarni yuklash
-            loadUsers();
-
-            // Doskani render qilish
             render();
+            updateStatus();
         };
 
-        // Foydalanuvchilarni yuklash
-        function loadUsers() {
-            tg.sendData(JSON.stringify({
-                action: 'get_users',
-                user_id: userId
-            }));
-        }
-
-        // Telegram dan kelgan ma'lumotlarni qabul qilish
-        window.addEventListener('message', function(event) {
-            try {
-                const data = JSON.parse(event.data);
-                if (Array.isArray(data)) {
-                    displayUsers(data);
-                }
-            } catch(e) {
-                // JSON emas
-            }
-        });
-
-        // Foydalanuvchilarni ko'rsatish
-        function displayUsers(users) {
-            const onlineDiv = document.getElementById('onlineUsers');
-            const offlineDiv = document.getElementById('offlineUsers');
-
-            onlineDiv.innerHTML = '';
-            offlineDiv.innerHTML = '';
-
-            users.forEach(user => {
-                const userElement = createUserElement(user);
-                if (user.online) {
-                    onlineDiv.appendChild(userElement);
-                } else {
-                    offlineDiv.appendChild(userElement);
-                }
-            });
-        }
-
-        // Foydalanuvchi elementi yaratish
-        function createUserElement(user) {
-            const div = document.createElement('div');
-            div.className = 'user-item';
-            div.onclick = () => inviteUser(user);
-
-            const badge = user.online ? 'online-badge' : 'offline-badge';
-            const status = user.online ? '🟢 Online' : '⚫ Offline';
-
-            div.innerHTML = `
-                <div class="user-info">
-                    <div class="user-avatar">👤</div>
-                    <div class="user-details">
-                        <span class="user-name">${user.name}</span>
-                        <span class="user-rating">★ ${user.rating}</span>
-                    </div>
-                </div>
-                <span class="${badge}">${status}</span>
-            `;
-
-            return div;
-        }
-
-        // Qidirish
-        document.getElementById('searchInput').addEventListener('input', function(e) {
-            const query = e.target.value.trim();
-            if (query.length > 1) {
-                tg.sendData(JSON.stringify({
-                    action: 'search_users',
-                    user_id: userId,
-                    query: query
-                }));
-            } else if (query.length === 0) {
-                loadUsers();
-            }
-        });
-
-        // Do'stni taklif qilish
-        function inviteUser(user) {
-            invitedFriend = user;
-            document.getElementById('opponentName').textContent = user.name;
-            document.getElementById('opponentRating').textContent = `★ ${user.rating}`;
-
-            tg.sendData(JSON.stringify({
-                action: 'invite',
-                friend_id: user.id,
-                room_code: roomCode,
-                from_name: userName,
-                game_type: gameType
-            }));
-
-            alert(`✅ ${user.name}ga taklif yuborildi!`);
-            closeInviteModal();
-            document.getElementById('inviteBtn').disabled = true;
-        }
-
-        // Modal oynani ochish
-        function openInviteModal() {
-            if (!roomCode) {
-                alert('Avval xona yarating! Botda "DO\'ST BILAN O\'YNASH" tugmasini bosing.');
-                return;
-            }
-            document.getElementById('inviteModal').style.display = 'flex';
-        }
-
-        function closeInviteModal() {
-            document.getElementById('inviteModal').style.display = 'none';
+        // O'yinni qayta boshlash
+        function restartGame() {
+            board = [
+                [0,2,0,2,0,2,0,2],
+                [2,0,2,0,2,0,2,0],
+                [0,2,0,2,0,2,0,2],
+                [0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0],
+                [1,0,1,0,1,0,1,0],
+                [0,1,0,1,0,1,0,1],
+                [1,0,1,0,1,0,1,0]
+            ];
+            currentPlayer = 1;
+            selected = null;
+            moves = [];
+            gameOver = false;
+            render();
+            updateStatus();
         }
 
         // O'yindan chiqish
@@ -663,6 +410,8 @@
                 for (let c = 0; c < 8; c++) {
                     const cell = document.createElement('div');
                     cell.className = `cell ${(r + c) % 2 === 0 ? 'light' : 'dark'}`;
+                    cell.setAttribute('data-row', r);
+                    cell.setAttribute('data-col', c);
 
                     if (board[r][c] > 0) {
                         const piece = document.createElement('div');
@@ -672,22 +421,40 @@
                             piece.classList.add('selected');
                         }
 
-                        piece.onclick = () => selectPiece(r, c);
+                        if (currentPlayer === 1 && (board[r][c] === 1 || board[r][c] === 3) && !gameOver) {
+                            piece.onclick = () => selectPiece(r, c);
+                        }
+
                         cell.appendChild(piece);
+                    } else {
+                        if (!gameOver) {
+                            cell.onclick = () => handleEmptyCellClick(r, c);
+                        }
                     }
 
                     boardEl.appendChild(cell);
                 }
             }
 
-            // Yurish imkoniyatlarini ko'rsatish
             renderHints();
+        }
+
+        // Bo'sh katakka bosilganda
+        function handleEmptyCellClick(r, c) {
+            const hintExists = moves.some(m => m.tr === r && m.tc === c);
+            if (hintExists) {
+                const move = moves.find(m => m.tr === r && m.tc === c);
+                if (move) {
+                    doMove(move);
+                }
+            }
         }
 
         // Yurish imkoniyatlarini ko'rsatish
         function renderHints() {
-            // Eski hintlarni tozalash
             document.querySelectorAll('.hint').forEach(h => h.remove());
+
+            if (gameOver) return;
 
             moves.forEach(m => {
                 const cells = document.querySelectorAll('.board .cell');
@@ -695,10 +462,6 @@
                 if (cells[index]) {
                     const hint = document.createElement('div');
                     hint.className = 'hint';
-                    hint.onclick = (e) => {
-                        e.stopPropagation();
-                        doMove(m);
-                    };
                     cells[index].appendChild(hint);
                 }
             });
@@ -708,6 +471,7 @@
         function selectPiece(r, c) {
             if (currentPlayer !== 1) return;
             if (board[r][c] !== 1 && board[r][c] !== 3) return;
+            if (gameOver) return;
 
             selected = {r, c};
             moves = getValidMoves(r, c);
@@ -718,8 +482,10 @@
         function getValidMoves(r, c) {
             const piece = board[r][c];
             const moves = [];
-            const dirs = piece > 2 ? [[-1,-1],[-1,1],[1,-1],[1,1]] :
-                        (piece === 1 ? [[-1,-1],[-1,1]] : [[1,-1],[1,1]]);
+            const isKing = piece > 2;
+            const isWhite = piece % 2 === 1;
+
+            const dirs = isKing ? [[-1,-1],[-1,1],[1,-1],[1,1]] : (isWhite ? [[-1,-1],[-1,1]] : [[1,-1],[1,1]]);
 
             dirs.forEach(d => {
                 // Oddiy yurish
@@ -763,12 +529,11 @@
             moves = [];
             currentPlayer = currentPlayer === 1 ? 2 : 1;
 
-            // Statusni yangilash
             updateStatus();
             render();
 
             // AI navbati
-            if (mode === 'ai' && currentPlayer === 2) {
+            if (mode === 'ai' && currentPlayer === 2 && !gameOver) {
                 setTimeout(aiMove, 500);
             }
 
@@ -820,21 +585,12 @@
 
             if (!whiteExists) {
                 document.getElementById('status').innerHTML = "⚫ Raqib yutdi!";
+                gameOver = true;
             } else if (!blackExists) {
                 document.getElementById('status').innerHTML = "⚪ Siz yutdingiz!";
+                gameOver = true;
             }
         }
-
-        // Modalni yopish (tashqariga bosganda)
-        window.onclick = function(event) {
-            const modal = document.getElementById('inviteModal');
-            if (event.target === modal) {
-                modal.style.display = 'none';
-            }
-        };
-
-        // Boshlang'ich render
-        render();
     </script>
 </body>
 </html>

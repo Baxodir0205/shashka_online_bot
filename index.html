@@ -160,23 +160,6 @@
             transform: translate(-50%, -50%);
         }
 
-        .piece.chess {
-            border-radius: 0;
-            background: transparent;
-            box-shadow: none;
-            font-size: 42px;
-        }
-
-        .piece.chess.white {
-            color: #fff;
-            text-shadow: 0 2px 5px rgba(0,0,0,0.5);
-        }
-
-        .piece.chess.black {
-            color: #000;
-            text-shadow: 0 2px 5px rgba(255,255,255,0.5);
-        }
-
         .selected {
             transform: scale(1.1);
             box-shadow: 0 0 20px #f1c40f;
@@ -489,12 +472,10 @@
     </div>
 
     <script>
-        // Telegram WebApp ni sozlash
         const tg = Telegram.WebApp;
         tg.expand();
         tg.ready();
 
-        // URL parametrlarini olish
         const params = new URLSearchParams(window.location.search);
         const userId = params.get('user');
         const userName = params.get('name') || 'Siz';
@@ -503,20 +484,12 @@
         const gameType = params.get('game') || 'checkers';
         const playerType = params.get('player');
 
-        // O'yin holati
-        let currentPlayer = 1; // 1 = oq, 2 = qora
+        let currentPlayer = 1;
         let selected = null;
         let moves = [];
         let gameOver = false;
         let users = [];
 
-        // Shaxmat toshlari (Unicode)
-        const chessPieces = {
-            1: '♙', 2: '♘', 3: '♗', 4: '♖', 5: '♕', 6: '♔',
-            7: '♟', 8: '♞', 9: '♝', 10: '♜', 11: '♛', 12: '♚'
-        };
-
-        // Shashka uchun boshlang'ich doska
         let board = [
             [0,2,0,2,0,2,0,2],
             [2,0,2,0,2,0,2,0],
@@ -528,14 +501,11 @@
             [1,0,1,0,1,0,1,0]
         ];
 
-        // Sahifa yuklanganda
         window.onload = function() {
-            // Sarlavhani o'zgartirish
             if (gameType === 'chess') {
                 document.getElementById('gameTitle').textContent = 'SHAXMAT ONLINE';
             }
 
-            // AI rejimida
             if (mode === 'ai') {
                 document.getElementById('opponentName').textContent = 'AI Bot';
                 document.getElementById('opponentRating').textContent = '★ 1200';
@@ -543,7 +513,6 @@
                 document.getElementById('aiInfo').style.display = 'block';
                 document.getElementById('roomInfo').style.display = 'none';
             }
-            // Do'st bilan o'ynaganda
             else if (roomCode) {
                 document.getElementById('roomInfo').style.display = 'block';
                 document.getElementById('roomCode').textContent = roomCode;
@@ -557,39 +526,22 @@
                 }
             }
 
-            // Foydalanuvchi ismini ko'rsatish
             document.getElementById('playerName').textContent = userName;
-
-            // O'yinni boshlash
-            restartGame();
+            render();
+            updateStatus();
         };
 
-        // O'yinni qayta boshlash
         function restartGame() {
-            if (gameType === 'checkers') {
-                board = [
-                    [0,2,0,2,0,2,0,2],
-                    [2,0,2,0,2,0,2,0],
-                    [0,2,0,2,0,2,0,2],
-                    [0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0],
-                    [1,0,1,0,1,0,1,0],
-                    [0,1,0,1,0,1,0,1],
-                    [1,0,1,0,1,0,1,0]
-                ];
-            } else {
-                // Shaxmat uchun boshlang'ich holat
-                board = [
-                    [4,2,3,5,6,3,2,4],
-                    [1,1,1,1,1,1,1,1],
-                    [0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0],
-                    [7,7,7,7,7,7,7,7],
-                    [10,8,9,11,12,9,8,10]
-                ];
-            }
+            board = [
+                [0,2,0,2,0,2,0,2],
+                [2,0,2,0,2,0,2,0],
+                [0,2,0,2,0,2,0,2],
+                [0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0],
+                [1,0,1,0,1,0,1,0],
+                [0,1,0,1,0,1,0,1],
+                [1,0,1,0,1,0,1,0]
+            ];
             currentPlayer = 1;
             selected = null;
             moves = [];
@@ -598,14 +550,12 @@
             updateStatus();
         }
 
-        // O'yindan chiqish
         function exitGame() {
             if (confirm("O'yindan chiqishni xohlaysizmi?")) {
                 tg.close();
             }
         }
 
-        // Do'st taklif qilish modalini ochish
         function openInviteModal() {
             document.getElementById('friendsModal').style.display = 'block';
             document.getElementById('friendsList').innerHTML = `
@@ -621,7 +571,6 @@
             }));
         }
 
-        // Do'stlar ro'yxatini yangilash
         function updateFriendsList(usersData) {
             users = usersData;
             const list = document.getElementById('friendsList');
@@ -665,12 +614,10 @@
             });
         }
 
-        // Do'stlarni qidirish
         function searchFriends() {
             updateFriendsList(users);
         }
 
-        // Taklif yuborish
         function sendInvite(friendId) {
             tg.sendData(JSON.stringify({
                 action: 'invite',
@@ -683,13 +630,11 @@
             closeInviteModal();
         }
 
-        // Modalni yopish
         function closeInviteModal() {
             document.getElementById('friendsModal').style.display = 'none';
             document.getElementById('friendSearch').value = '';
         }
 
-        // Doskani render qilish
         function render() {
             const boardEl = document.getElementById('board');
             boardEl.innerHTML = '';
@@ -703,15 +648,10 @@
 
                     if (board[r][c] > 0) {
                         const piece = document.createElement('div');
+                        piece.className = `piece ${board[r][c] % 2 === 1 ? 'white' : 'black'}`;
 
-                        if (gameType === 'chess') {
-                            piece.className = `piece chess ${board[r][c] < 7 ? 'white' : 'black'}`;
-                            piece.textContent = chessPieces[board[r][c]] || '';
-                        } else {
-                            piece.className = `piece ${board[r][c] % 2 === 1 ? 'white' : 'black'}`;
-                            if (board[r][c] > 2) {
-                                piece.classList.add('king');
-                            }
+                        if (board[r][c] > 2) {
+                            piece.classList.add('king');
                         }
 
                         if (selected && selected.r === r && selected.c === c) {
@@ -719,9 +659,7 @@
                         }
 
                         if (currentPlayer === 1 && !gameOver) {
-                            if (gameType === 'checkers' && (board[r][c] === 1 || board[r][c] === 3)) {
-                                piece.onclick = () => selectPiece(r, c);
-                            } else if (gameType === 'chess' && board[r][c] < 7) {
+                            if (board[r][c] === 1 || board[r][c] === 3) {
                                 piece.onclick = () => selectPiece(r, c);
                             }
                         }
@@ -776,10 +714,6 @@
         }
 
         function getValidMoves(r, c) {
-            if (gameType === 'chess') {
-                return getChessMoves(r, c);
-            }
-
             const piece = board[r][c];
             const moves = [];
             const isKing = piece > 2;
@@ -810,40 +744,16 @@
             return moves;
         }
 
-        function getChessMoves(r, c) {
-            const piece = board[r][c];
-            const moves = [];
-
-            if (piece === 1) {
-                if (r > 0 && board[r-1][c] === 0) {
-                    moves.push({fr: r, fc: c, tr: r-1, tc: c});
-                }
-                if (r === 6 && board[5][c] === 0 && board[4][c] === 0) {
-                    moves.push({fr: r, fc: c, tr: r-4, tc: c});
-                }
-                if (r > 0 && c > 0 && board[r-1][c-1] >= 7) {
-                    moves.push({fr: r, fc: c, tr: r-1, tc: c-1, cap: true});
-                }
-                if (r > 0 && c < 7 && board[r-1][c+1] >= 7) {
-                    moves.push({fr: r, fc: c, tr: r-1, tc: c+1, cap: true});
-                }
-            }
-
-            return moves;
-        }
-
         function doMove(m) {
-            if (m.cap && gameType === 'checkers') {
+            if (m.cap) {
                 board[m.mr][m.mc] = 0;
             }
 
             board[m.tr][m.tc] = board[m.fr][m.fc];
             board[m.fr][m.fc] = 0;
 
-            if (gameType === 'checkers') {
-                if (m.tr === 0 && board[m.tr][m.tc] === 1) board[m.tr][m.tc] = 3;
-                if (m.tr === 7 && board[m.tr][m.tc] === 2) board[m.tr][m.tc] = 4;
-            }
+            if (m.tr === 0 && board[m.tr][m.tc] === 1) board[m.tr][m.tc] = 3;
+            if (m.tr === 7 && board[m.tr][m.tc] === 2) board[m.tr][m.tc] = 4;
 
             selected = null;
             moves = [];
@@ -863,14 +773,8 @@
             const aiMoves = [];
             for (let r = 0; r < 8; r++) {
                 for (let c = 0; c < 8; c++) {
-                    if (gameType === 'checkers') {
-                        if (board[r][c] === 2 || board[r][c] === 4) {
-                            aiMoves.push(...getValidMoves(r, c));
-                        }
-                    } else {
-                        if (board[r][c] >= 7) {
-                            aiMoves.push(...getChessMoves(r, c));
-                        }
+                    if (board[r][c] === 2 || board[r][c] === 4) {
+                        aiMoves.push(...getValidMoves(r, c));
                     }
                 }
             }
@@ -899,13 +803,8 @@
 
             for (let r = 0; r < 8; r++) {
                 for (let c = 0; c < 8; c++) {
-                    if (gameType === 'checkers') {
-                        if (board[r][c] === 1 || board[r][c] === 3) whiteExists = true;
-                        if (board[r][c] === 2 || board[r][c] === 4) blackExists = true;
-                    } else {
-                        if (board[r][c] > 0 && board[r][c] < 7) whiteExists = true;
-                        if (board[r][c] >= 7) blackExists = true;
-                    }
+                    if (board[r][c] === 1 || board[r][c] === 3) whiteExists = true;
+                    if (board[r][c] === 2 || board[r][c] === 4) blackExists = true;
                 }
             }
 
@@ -914,21 +813,18 @@
                 gameOver = true;
                 tg.sendData(JSON.stringify({
                     action: 'game_over',
-                    winner_id: userId,
-                    rating_change: 25
+                    winner_id: userId
                 }));
             } else if (!blackExists) {
                 document.getElementById('status').innerHTML = "⚪ Siz yutdingiz!";
                 gameOver = true;
                 tg.sendData(JSON.stringify({
                     action: 'game_over',
-                    winner_id: userId,
-                    rating_change: 25
+                    winner_id: userId
                 }));
             }
         }
 
-        // Telegram botdan kelgan ma'lumotlarni qabul qilish
         tg.onEvent('webAppData', (data) => {
             try {
                 const response = JSON.parse(data.data);

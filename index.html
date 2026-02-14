@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Shashka & Shaxmat Online</title>
+    <title>Shashka Online - To'liq qoidalar</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -16,7 +16,7 @@
         }
 
         body {
-            background: #1a252f;
+            background: #1e3c5c;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -28,83 +28,84 @@
         .game-container {
             width: 100%;
             max-width: 400px;
+            background: white;
+            border-radius: 30px;
+            padding: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
         }
 
         .game-title {
             text-align: center;
-            font-size: 32px;
+            font-size: 24px;
             font-weight: bold;
-            color: #f1c40f;
-            margin-bottom: 20px;
-            text-shadow: 0 2px 10px rgba(241, 196, 15, 0.3);
+            color: #1e3c5c;
+            margin-bottom: 10px;
         }
 
         .players-panel {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: #2c3e50;
-            padding: 15px;
+            background: #f5f5f5;
+            padding: 12px;
             border-radius: 20px;
-            margin-bottom: 20px;
-            border: 1px solid #3e4f5f;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            margin-bottom: 15px;
+            border: 2px solid #e0e0e0;
         }
 
         .player-section {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 5px;
+            gap: 3px;
             flex: 1;
         }
 
         .player-label {
-            font-size: 12px;
-            color: #bdc3c7;
+            font-size: 11px;
+            color: #666;
             text-transform: uppercase;
         }
 
         .player-name {
             font-weight: bold;
-            font-size: 18px;
-            color: #ecf0f1;
-            max-width: 120px;
+            font-size: 14px;
+            color: #333;
+            max-width: 100px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
 
         .player-rating {
-            font-size: 14px;
-            color: #f1c40f;
+            font-size: 11px;
+            color: #f39c12;
             font-weight: bold;
         }
 
         .vs-badge {
             background: #e74c3c;
-            padding: 5px 15px;
-            border-radius: 25px;
+            padding: 4px 12px;
+            border-radius: 20px;
             font-weight: bold;
-            font-size: 14px;
+            font-size: 12px;
             color: white;
-            box-shadow: 0 3px 8px rgba(231, 76, 60, 0.4);
         }
 
         .board-wrapper {
-            background: #3e2723;
-            padding: 10px;
+            background: #d9a066;
+            padding: 12px;
             border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+            box-shadow: inset 0 -3px 0 #b87c4b;
         }
 
         .board {
             display: grid;
             grid-template-columns: repeat(8, 1fr);
             aspect-ratio: 1/1;
-            border: 3px solid #2b1d1a;
-            border-radius: 10px;
+            border: 3px solid #8b5a2b;
+            border-radius: 12px;
             overflow: hidden;
         }
 
@@ -119,11 +120,11 @@
         }
 
         .light {
-            background: #d7b899;
+            background: #f0d9b5;
         }
 
         .dark {
-            background: #795548;
+            background: #b58863;
         }
 
         .piece {
@@ -136,145 +137,150 @@
             cursor: pointer;
             position: relative;
             transition: all 0.2s ease;
-            font-size: 28px;
+            font-size: 24px;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.2);
         }
 
         .piece.white {
-            background: #ecf0f1;
-            box-shadow: 0 4px 0 #bdc3c7;
-            color: #2c3e50;
+            background: #ffffff;
+            border: 2px solid #cccccc;
+            color: #333;
         }
 
         .piece.black {
-            background: #2c3e50;
-            box-shadow: 0 4px 0 #1a252f;
-            color: #ecf0f1;
+            background: #333333;
+            border: 2px solid #666666;
+            color: #fff;
         }
 
         .piece.king::after {
             content: '👑';
-            font-size: 22px;
+            font-size: 20px;
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
+            text-shadow: 0 2px 3px rgba(0,0,0,0.3);
         }
 
         .selected {
             transform: scale(1.1);
-            box-shadow: 0 0 20px #f1c40f;
+            box-shadow: 0 0 15px #f39c12, 0 4px 0 #b87c4b;
+            border: 3px solid #f39c12 !important;
             z-index: 10;
         }
 
+        .must-capture {
+            animation: mustCapture 1.5s infinite;
+        }
+
+        @keyframes mustCapture {
+            0% { box-shadow: 0 0 10px #e74c3c; }
+            50% { box-shadow: 0 0 20px #e74c3c; }
+            100% { box-shadow: 0 0 10px #e74c3c; }
+        }
+
         .hint {
-            width: 16px;
-            height: 16px;
+            width: 18px;
+            height: 18px;
             background: #2ecc71;
             border-radius: 50%;
             cursor: pointer;
             animation: pulse 1.5s infinite;
-            border: 2px solid white;
+            border: 3px solid white;
             box-shadow: 0 0 10px #2ecc71;
             position: absolute;
             z-index: 5;
         }
 
+        .capture-hint {
+            background: #e74c3c;
+            box-shadow: 0 0 10px #e74c3c;
+            width: 22px;
+            height: 22px;
+        }
+
         @keyframes pulse {
-            0% { transform: scale(1); opacity: 0.8; }
-            50% { transform: scale(1.3); opacity: 1; }
-            100% { transform: scale(1); opacity: 0.8; }
+            0% { transform: scale(1); opacity: 0.9; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.9; }
         }
 
         .status-bar {
-            background: #2c3e50;
-            padding: 15px;
+            background: #f5f5f5;
+            padding: 12px;
             border-radius: 15px;
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             font-weight: bold;
-            font-size: 18px;
-            color: #f1c40f;
-            border: 1px solid #3e4f5f;
-            box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+            font-size: 15px;
+            color: #333;
+            border: 2px solid #e0e0e0;
         }
 
         .buttons-panel {
             display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
         }
 
         .btn {
             flex: 1;
-            min-width: 120px;
-            padding: 16px;
+            padding: 12px;
             border: none;
             border-radius: 15px;
             font-weight: bold;
-            font-size: 16px;
+            font-size: 14px;
             cursor: pointer;
             transition: all 0.2s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 5px;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.1);
         }
 
         .btn:active {
-            transform: scale(0.97);
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 rgba(0,0,0,0.1);
         }
 
         .btn-exit {
-            background: #c0392b;
+            background: #e74c3c;
             color: white;
-            box-shadow: 0 5px 0 #962d22;
         }
 
         .btn-restart {
             background: #27ae60;
             color: white;
-            box-shadow: 0 5px 0 #1e8449;
         }
 
         .btn-invite {
             background: #3498db;
             color: white;
-            box-shadow: 0 5px 0 #2980b9;
-        }
-
-        .room-info {
-            background: #34495e;
-            padding: 15px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            text-align: center;
-            border: 2px dashed #f1c40f;
-            display: none;
-        }
-
-        .room-code-label {
-            font-size: 13px;
-            color: #bdc3c7;
-            margin-bottom: 5px;
-        }
-
-        .room-code {
-            font-size: 36px;
-            font-weight: bold;
-            letter-spacing: 8px;
-            color: #f1c40f;
-            font-family: monospace;
         }
 
         .ai-info {
-            background: #34495e;
+            background: #f0f8ff;
             padding: 10px;
-            border-radius: 15px;
-            margin-bottom: 20px;
+            border-radius: 12px;
+            margin-bottom: 12px;
             text-align: center;
-            border: 1px solid #f1c40f;
-            color: #f1c40f;
-            font-size: 14px;
+            border: 2px dashed #3498db;
+            color: #2980b9;
+            font-size: 13px;
+            display: none;
+        }
+
+        .capture-warning {
+            background: #ffeaa7;
+            color: #d63031;
+            padding: 8px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
             display: none;
         }
 
@@ -291,128 +297,49 @@
         }
 
         .modal-content {
-            background: #2c3e50;
-            margin: 5% auto;
+            background: white;
+            margin: 20% auto;
             padding: 20px;
             width: 90%;
-            max-width: 400px;
-            border-radius: 15px;
-            max-height: 80%;
-            overflow-y: auto;
-            border: 2px solid #f1c40f;
+            max-width: 300px;
+            border-radius: 20px;
+            text-align: center;
         }
 
         .modal h3 {
-            text-align: center;
-            color: #f1c40f;
-            margin-bottom: 15px;
-            font-size: 24px;
-        }
-
-        .search-box {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 15px;
-            border: 2px solid #3e4f5f;
-            border-radius: 10px;
-            background: #34495e;
-            color: white;
-            font-size: 16px;
-        }
-
-        .search-box::placeholder {
-            color: #bdc3c7;
-        }
-
-        .friends-list {
-            min-height: 200px;
-        }
-
-        .friend-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #3e4f5f;
-            padding: 12px 0;
-        }
-
-        .friend-info {
-            display: flex;
-            flex-direction: column;
-            gap: 3px;
-        }
-
-        .friend-name {
-            font-weight: bold;
-            color: #ecf0f1;
-        }
-
-        .friend-status {
-            font-size: 12px;
-        }
-
-        .friend-status.online {
-            color: #2ecc71;
-        }
-
-        .friend-status.offline {
-            color: #e74c3c;
-        }
-
-        .friend-rating {
-            font-size: 13px;
-            color: #f1c40f;
-        }
-
-        .invite-btn {
-            background: #27ae60;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.2s;
-        }
-
-        .invite-btn:active {
-            transform: scale(0.95);
-            background: #1e8449;
-        }
-
-        .empty-state {
-            text-align: center;
-            color: #bdc3c7;
-            padding: 30px 20px;
-        }
-
-        .empty-state .emoji {
-            font-size: 48px;
+            color: #1e3c5c;
             margin-bottom: 10px;
-            opacity: 0.5;
         }
 
-        .empty-state p {
-            font-size: 16px;
-            line-height: 1.5;
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
         }
 
-        .close-modal {
-            width: 100%;
-            margin-top: 15px;
-            padding: 12px;
+        .modal-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .modal-btn.confirm {
             background: #e74c3c;
             color: white;
-            border: none;
-            border-radius: 10px;
-            font-weight: bold;
-            cursor: pointer;
+        }
+
+        .modal-btn.cancel {
+            background: #95a5a6;
+            color: white;
         }
     </style>
 </head>
 <body>
     <div class="game-container">
-        <div class="game-title" id="gameTitle">SHAHKA ONLINE</div>
+        <div class="game-title">🎯 SHAHKA ONLINE</div>
 
         <div class="players-panel">
             <div class="player-section">
@@ -420,11 +347,11 @@
                 <span class="player-name" id="playerName">O'yinchi</span>
                 <span class="player-rating" id="playerRating">★ 1200</span>
             </div>
-            <div class="vs-badge" id="vsBadge">VS</div>
+            <div class="vs-badge">VS</div>
             <div class="player-section">
-                <span class="player-label" id="opponentLabel">RAQIB</span>
-                <span class="player-name" id="opponentName">Tanlanmagan</span>
-                <span class="player-rating" id="opponentRating">★ 0</span>
+                <span class="player-label">RAQIB</span>
+                <span class="player-name" id="opponentName">AI Bot</span>
+                <span class="player-rating" id="opponentRating">★ 1200</span>
             </div>
         </div>
 
@@ -432,9 +359,8 @@
             🤖 AI botga qarshi o'ynamoqdasiz
         </div>
 
-        <div id="roomInfo" class="room-info">
-            <div class="room-code-label">XONA KODI</div>
-            <div class="room-code" id="roomCode">------</div>
+        <div id="captureWarning" class="capture-warning">
+            ⚠️ Urish majburiy! Raqib donasini oling
         </div>
 
         <div class="board-wrapper">
@@ -444,11 +370,8 @@
         <div id="status" class="status-bar">⚪ Sizning navbatingiz</div>
 
         <div class="buttons-panel">
-            <button class="btn btn-exit" onclick="exitGame()">
+            <button class="btn btn-exit" onclick="showExitConfirm()">
                 <span>🚪</span> Chiqish
-            </button>
-            <button id="inviteBtn" class="btn btn-invite" onclick="openInviteModal()" style="display: none;">
-                <span>👥</span> Do'st taklif qilish
             </button>
             <button class="btn btn-restart" onclick="restartGame()">
                 <span>🔄</span> Qayta boshlash
@@ -456,18 +379,15 @@
         </div>
     </div>
 
-    <!-- Do'stlar ro'yxati modali -->
-    <div id="friendsModal" class="modal">
+    <!-- Chiqish tasdiqlash modal -->
+    <div id="exitModal" class="modal">
         <div class="modal-content">
-            <h3>👥 Do'stlar ro'yxati</h3>
-            <input type="text" class="search-box" id="friendSearch" placeholder="Ism yoki username..." onkeyup="searchFriends()">
-            <div id="friendsList" class="friends-list">
-                <div class="empty-state">
-                    <div class="emoji">😕</div>
-                    <p>Hozircha do'stlar yo'q<br>Botga hali hech kim a'zo bo'lmagan</p>
-                </div>
+            <h3>🚪 O'yindan chiqish</h3>
+            <p>O'yindan chiqishni xohlaysizmi?</p>
+            <div class="modal-buttons">
+                <button class="modal-btn cancel" onclick="closeExitModal()">Bekor qilish</button>
+                <button class="modal-btn confirm" onclick="confirmExit()">Chiqish</button>
             </div>
-            <button class="close-modal" onclick="closeInviteModal()">Yopish</button>
         </div>
     </div>
 
@@ -476,364 +396,604 @@
         tg.expand();
         tg.ready();
 
+        // URL parametrlari
         const params = new URLSearchParams(window.location.search);
-        const userId = params.get('user');
-        const userName = params.get('name') || 'Siz';
-        const roomCode = params.get('room');
-        const mode = params.get('mode');
-        const gameType = params.get('game') || 'checkers';
-        const playerType = params.get('player');
+        const userId = params.get('user') || 'user_' + Math.random();
+        const userName = params.get('name') || 'O\'yinchi';
+        const mode = params.get('mode') || 'ai';
 
-        let currentPlayer = 1;
-        let selected = null;
-        let moves = [];
-        let gameOver = false;
-        let users = [];
+        // O'yin holati
+        let board = [];
+        let currentPlayer = 1; // 1 - oq (odam), 2 - qora (AI)
+        let selectedPiece = null;
+        let validMoves = [];
+        let gameActive = true;
+        let aiThinking = false;
+        let mustCapturePieces = []; // Urish majburiy bo'lgan donalar
 
-        let board = [
-            [0,2,0,2,0,2,0,2],
-            [2,0,2,0,2,0,2,0],
-            [0,2,0,2,0,2,0,2],
-            [0,0,0,0,0,0,0,0],
-            [0,0,0,0,0,0,0,0],
-            [1,0,1,0,1,0,1,0],
-            [0,1,0,1,0,1,0,1],
-            [1,0,1,0,1,0,1,0]
-        ];
+        // DOM elementlar
+        const boardElement = document.getElementById('board');
+        const statusElement = document.getElementById('status');
+        const captureWarning = document.getElementById('captureWarning');
 
-        window.onload = function() {
-            if (gameType === 'chess') {
-                document.getElementById('gameTitle').textContent = 'SHAXMAT ONLINE';
-            }
+        // O'yinchi ma'lumotlarini o'rnatish
+        document.getElementById('playerName').textContent = userName;
+        if (mode === 'ai') {
+            document.getElementById('opponentName').textContent = 'AI Bot';
+            document.getElementById('aiInfo').style.display = 'block';
+        }
 
-            if (mode === 'ai') {
-                document.getElementById('opponentName').textContent = 'AI Bot';
-                document.getElementById('opponentRating').textContent = '★ 1200';
-                document.getElementById('opponentLabel').textContent = 'AI BOT';
-                document.getElementById('aiInfo').style.display = 'block';
-                document.getElementById('roomInfo').style.display = 'none';
-            }
-            else if (roomCode) {
-                document.getElementById('roomInfo').style.display = 'block';
-                document.getElementById('roomCode').textContent = roomCode;
-                document.getElementById('aiInfo').style.display = 'none';
-
-                if (playerType === 'host') {
-                    document.getElementById('opponentName').textContent = 'Do\'st (kutilmoqda)';
-                    document.getElementById('inviteBtn').style.display = 'flex';
-                } else {
-                    document.getElementById('opponentName').textContent = 'Do\'st';
-                }
-            }
-
-            document.getElementById('playerName').textContent = userName;
-            render();
-            updateStatus();
-        };
-
-        function restartGame() {
+        // Boshlang'ich taxtani yaratish
+        function initBoard() {
             board = [
-                [0,2,0,2,0,2,0,2],
-                [2,0,2,0,2,0,2,0],
-                [0,2,0,2,0,2,0,2],
-                [0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0],
-                [1,0,1,0,1,0,1,0],
-                [0,1,0,1,0,1,0,1],
-                [1,0,1,0,1,0,1,0]
+                [0,2,0,2,0,2,0,2], // 0-qator: qora donalar
+                [2,0,2,0,2,0,2,0], // 1-qator: qora donalar
+                [0,2,0,2,0,2,0,2], // 2-qator: qora donalar
+                [0,0,0,0,0,0,0,0], // 3-qator: bo'sh
+                [0,0,0,0,0,0,0,0], // 4-qator: bo'sh
+                [1,0,1,0,1,0,1,0], // 5-qator: oq donalar
+                [0,1,0,1,0,1,0,1], // 6-qator: oq donalar
+                [1,0,1,0,1,0,1,0]  // 7-qator: oq donalar
             ];
-            currentPlayer = 1;
-            selected = null;
-            moves = [];
-            gameOver = false;
-            render();
-            updateStatus();
+
+            // 1-3 qatorlar qora (2), 6-8 qatorlar oq (1)
+            // 3 va 4 qiymatlar damka (king) uchun
         }
 
-        function exitGame() {
-            if (confirm("O'yindan chiqishni xohlaysizmi?")) {
-                tg.close();
-            }
+        // O'yinchi nomlarini o'rnatish
+        function setPlayerNames() {
+            // Bu funksiya kerak emas, lekin xatolik chiqmasligi uchun qoldiramiz
         }
 
-        function openInviteModal() {
-            document.getElementById('friendsModal').style.display = 'block';
-            document.getElementById('friendsList').innerHTML = `
-                <div class="empty-state">
-                    <div class="emoji">⏳</div>
-                    <p>Do'stlar ro'yxati yuklanmoqda...</p>
-                </div>
-            `;
+        // Taxtani chizish
+        function renderBoard() {
+            boardElement.innerHTML = '';
 
-            tg.sendData(JSON.stringify({
-                action: 'get_users',
-                user_id: userId
-            }));
-        }
-
-        function updateFriendsList(usersData) {
-            users = usersData;
-            const list = document.getElementById('friendsList');
-            const searchTerm = document.getElementById('friendSearch').value.toLowerCase();
-
-            let filteredUsers = users;
-            if (searchTerm) {
-                filteredUsers = users.filter(u =>
-                    u.name.toLowerCase().includes(searchTerm) ||
-                    (u.username && u.username.toLowerCase().includes(searchTerm))
-                );
-            }
-
-            if (filteredUsers.length === 0) {
-                list.innerHTML = `
-                    <div class="empty-state">
-                        <div class="emoji">😕</div>
-                        <p>${searchTerm ? 'Hech narsa topilmadi' : 'Hozircha do\'stlar yo\'q'}</p>
-                    </div>
-                `;
-                return;
-            }
-
-            list.innerHTML = '';
-            filteredUsers.forEach(u => {
-                const div = document.createElement('div');
-                div.className = 'friend-item';
-                div.innerHTML = `
-                    <div class="friend-info">
-                        <span class="friend-name">${u.name}</span>
-                        <span class="friend-rating">★ ${u.rating}</span>
-                        <span class="friend-status ${u.online ? 'online' : 'offline'}">
-                            ${u.online ? '🟢 Online' : '⚪ Offline'}
-                        </span>
-                    </div>
-                    <button class="invite-btn" onclick="sendInvite(${u.id})">
-                        Taklif qilish
-                    </button>
-                `;
-                list.appendChild(div);
-            });
-        }
-
-        function searchFriends() {
-            updateFriendsList(users);
-        }
-
-        function sendInvite(friendId) {
-            tg.sendData(JSON.stringify({
-                action: 'invite',
-                friend_id: friendId,
-                room_code: roomCode,
-                from_name: userName,
-                game_type: gameType
-            }));
-            alert("✅ Taklif yuborildi!");
-            closeInviteModal();
-        }
-
-        function closeInviteModal() {
-            document.getElementById('friendsModal').style.display = 'none';
-            document.getElementById('friendSearch').value = '';
-        }
-
-        function render() {
-            const boardEl = document.getElementById('board');
-            boardEl.innerHTML = '';
-
-            for (let r = 0; r < 8; r++) {
-                for (let c = 0; c < 8; c++) {
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
                     const cell = document.createElement('div');
-                    cell.className = `cell ${(r + c) % 2 === 0 ? 'light' : 'dark'}`;
-                    cell.setAttribute('data-row', r);
-                    cell.setAttribute('data-col', c);
+                    cell.className = `cell ${(row + col) % 2 === 0 ? 'light' : 'dark'}`;
+                    cell.dataset.row = row;
+                    cell.dataset.col = col;
 
-                    if (board[r][c] > 0) {
-                        const piece = document.createElement('div');
-                        piece.className = `piece ${board[r][c] % 2 === 1 ? 'white' : 'black'}`;
+                    const piece = board[row][col];
 
-                        if (board[r][c] > 2) {
-                            piece.classList.add('king');
+                    if (piece > 0) {
+                        const pieceDiv = document.createElement('div');
+                        const isWhite = (piece === 1 || piece === 3);
+                        pieceDiv.className = `piece ${isWhite ? 'white' : 'black'}`;
+
+                        if (piece === 3 || piece === 4) {
+                            pieceDiv.classList.add('king');
                         }
 
-                        if (selected && selected.r === r && selected.c === c) {
-                            piece.classList.add('selected');
+                        // Tanlangan donani belgilash
+                        if (selectedPiece && selectedPiece.row === row && selectedPiece.col === col) {
+                            pieceDiv.classList.add('selected');
                         }
 
-                        if (currentPlayer === 1 && !gameOver) {
-                            if (board[r][c] === 1 || board[r][c] === 3) {
-                                piece.onclick = () => selectPiece(r, c);
-                            }
+                        // Urish majburiy bo'lgan donalarni belgilash
+                        if (mustCapturePieces.some(p => p.row === row && p.col === col)) {
+                            pieceDiv.classList.add('must-capture');
                         }
 
-                        cell.appendChild(piece);
+                        // Faqat o'z navbatida va o'yin davom etayotganda donani tanlash mumkin
+                        if (gameActive && currentPlayer === 1 && isWhite) {
+                            pieceDiv.onclick = (e) => {
+                                e.stopPropagation();
+                                selectPiece(row, col);
+                            };
+                        }
+
+                        cell.appendChild(pieceDiv);
                     } else {
-                        if (!gameOver) {
-                            cell.onclick = () => handleEmptyCellClick(r, c);
+                        // Bo'sh kataklarni bosganda yurish amalga oshiriladi
+                        if (gameActive && currentPlayer === 1) {
+                            cell.onclick = () => handleCellClick(row, col);
                         }
                     }
 
-                    boardEl.appendChild(cell);
+                    boardElement.appendChild(cell);
                 }
             }
 
-            renderHints();
+            // Yurish mumkin bo'lgan kataklarni ko'rsatish
+            showValidMoves();
         }
 
-        function handleEmptyCellClick(r, c) {
-            const hintExists = moves.some(m => m.tr === r && m.tc === c);
-            if (hintExists) {
-                const move = moves.find(m => m.tr === r && m.tc === c);
-                if (move) {
-                    doMove(move);
-                }
-            }
-        }
-
-        function renderHints() {
+        // Yurish mumkin bo'lgan kataklarni ko'rsatish
+        function showValidMoves() {
+            // Avval eski hintlarni tozalash
             document.querySelectorAll('.hint').forEach(h => h.remove());
 
-            if (gameOver) return;
+            if (!gameActive || currentPlayer !== 1) return;
 
-            moves.forEach(m => {
-                const cells = document.querySelectorAll('.board .cell');
-                const index = m.tr * 8 + m.tc;
+            validMoves.forEach(move => {
+                const cells = document.querySelectorAll('.cell');
+                const index = move.toRow * 8 + move.toCol;
                 if (cells[index]) {
                     const hint = document.createElement('div');
-                    hint.className = 'hint';
+                    hint.className = `hint ${move.isCapture ? 'capture-hint' : ''}`;
                     cells[index].appendChild(hint);
                 }
             });
         }
 
-        function selectPiece(r, c) {
-            if (currentPlayer !== 1) return;
-            if (gameOver) return;
+        // Donani tanlash
+        function selectPiece(row, col) {
+            if (!gameActive || currentPlayer !== 1) return;
 
-            selected = {r, c};
-            moves = getValidMoves(r, c);
-            render();
+            const piece = board[row][col];
+            if (piece !== 1 && piece !== 3) return; // Faqat oq donalar
+
+            // Urish majburiy bo'lsa, faqat ura oladigan donalarni tanlash mumkin
+            if (mustCapturePieces.length > 0) {
+                if (!mustCapturePieces.some(p => p.row === row && p.col === col)) {
+                    statusElement.innerHTML = "⚠️ Urish majburiy! Raqib donasini oling";
+                    return;
+                }
+            }
+
+            // Tanlangan dona uchun mumkin bo'lgan yurishlarni hisoblash
+            const moves = getValidMoves(row, col);
+
+            if (moves.length > 0) {
+                selectedPiece = { row, col };
+                validMoves = moves;
+                renderBoard();
+            }
         }
 
-        function getValidMoves(r, c) {
-            const piece = board[r][c];
+        // Bo'sh katakni bosish
+        function handleCellClick(row, col) {
+            if (!selectedPiece || !gameActive || currentPlayer !== 1) return;
+
+            // Tanlangan yurishni topish
+            const move = validMoves.find(m => m.toRow === row && m.toCol === col);
+            if (move) {
+                makeMove(move);
+            } else {
+                // Boshqa katak bosilsa, tanlovni bekor qilish
+                selectedPiece = null;
+                validMoves = [];
+                renderBoard();
+            }
+        }
+
+        // Mumkin bo'lgan yurishlarni hisoblash
+        function getValidMoves(row, col) {
+            const piece = board[row][col];
+            if (piece === 0) return [];
+
             const moves = [];
-            const isKing = piece > 2;
-            const isWhite = piece % 2 === 1;
+            const isKing = (piece === 3 || piece === 4);
+            const isWhite = (piece === 1 || piece === 3);
 
-            const dirs = isKing ? [[-1,-1],[-1,1],[1,-1],[1,1]] : (isWhite ? [[-1,-1],[-1,1]] : [[1,-1],[1,1]]);
+            // QOIDALAR:
+            // 1. Oddiy dona faqat oldinga diagonal yuradi
+            // 2. Damka oldinga va orqaga diagonal yuradi
+            // 3. Urish majburiy
+            // 4. Bir necha donani ketma-ket urish mumkin
 
-            dirs.forEach(d => {
-                const nr = r + d[0];
-                const nc = c + d[1];
-                if (nr >= 0 && nr < 8 && nc >= 0 && nc < 8 && board[nr][nc] === 0) {
-                    moves.push({fr: r, fc: c, tr: nr, tc: nc, cap: false});
-                }
+            // Urishlarni topish (majburiy)
+            const captureMoves = findCaptures(row, col, piece, isKing, isWhite);
 
-                const jr = r + d[0] * 2;
-                const jc = c + d[1] * 2;
-                if (jr >= 0 && jr < 8 && jc >= 0 && jc < 8 && board[jr][jc] === 0) {
-                    const mid = board[r + d[0]][c + d[1]];
-                    if (mid > 0 && mid % 2 !== piece % 2) {
-                        moves.push({
-                            fr: r, fc: c, tr: jr, tc: jc, cap: true,
-                            mr: r + d[0], mc: c + d[1]
-                        });
+            if (captureMoves.length > 0) {
+                // Agar urish mumkin bo'lsa, faqat urishlarni qaytarish
+                return captureMoves;
+            }
+
+            // Agar urish majburiy bo'lmasa, oddiy yurishlarni topish
+            if (mustCapturePieces.length === 0) {
+                // Oddiy yurishlar
+                const directions = isKing ? [[-1,-1], [-1,1], [1,-1], [1,1]]
+                                        : (isWhite ? [[-1,-1], [-1,1]] : [[1,-1], [1,1]]);
+
+                for (const [dr, dc] of directions) {
+                    const newRow = row + dr;
+                    const newCol = col + dc;
+
+                    if (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8) {
+                        if (board[newRow][newCol] === 0) {
+                            moves.push({
+                                fromRow: row,
+                                fromCol: col,
+                                toRow: newRow,
+                                toCol: newCol,
+                                isCapture: false,
+                                capturedRow: null,
+                                capturedCol: null
+                            });
+                        }
                     }
                 }
-            });
+            }
 
             return moves;
         }
 
-        function doMove(m) {
-            if (m.cap) {
-                board[m.mr][m.mc] = 0;
-            }
+        // Urish imkoniyatlarini topish
+        function findCaptures(row, col, piece, isKing, isWhite) {
+            const captures = [];
+            const directions = [[-1,-1], [-1,1], [1,-1], [1,1]];
 
-            board[m.tr][m.tc] = board[m.fr][m.fc];
-            board[m.fr][m.fc] = 0;
+            for (const [dr, dc] of directions) {
+                // Damka uchun - uzoq masofaga urish
+                if (isKing) {
+                    let distance = 1;
+                    while (true) {
+                        const midRow = row + dr * distance;
+                        const midCol = col + dc * distance;
+                        const jumpRow = row + dr * (distance + 1);
+                        const jumpCol = col + dc * (distance + 1);
 
-            if (m.tr === 0 && board[m.tr][m.tc] === 1) board[m.tr][m.tc] = 3;
-            if (m.tr === 7 && board[m.tr][m.tc] === 2) board[m.tr][m.tc] = 4;
+                        if (jumpRow < 0 || jumpRow >= 8 || jumpCol < 0 || jumpCol >= 8) break;
 
-            selected = null;
-            moves = [];
-            currentPlayer = currentPlayer === 1 ? 2 : 1;
+                        const midPiece = board[midRow]?.[midCol];
+                        const jumpCell = board[jumpRow]?.[jumpCol];
 
-            updateStatus();
-            render();
+                        if (midPiece > 0 && midPiece % 2 !== piece % 2 && jumpCell === 0) {
+                            captures.push({
+                                fromRow: row,
+                                fromCol: col,
+                                toRow: jumpRow,
+                                toCol: jumpCol,
+                                isCapture: true,
+                                capturedRow: midRow,
+                                capturedCol: midCol
+                            });
+                            break; // Birinchi to'xtatilgan donani urish
+                        }
 
-            if (mode === 'ai' && currentPlayer === 2 && !gameOver) {
-                setTimeout(aiMove, 500);
-            }
+                        if (midPiece !== 0) break; // To'siq bor
+                        distance++;
+                    }
+                } else {
+                    // Oddiy dona uchun
+                    const midRow = row + dr;
+                    const midCol = col + dc;
+                    const jumpRow = row + dr * 2;
+                    const jumpCol = col + dc * 2;
 
-            checkGameOver();
-        }
+                    if (jumpRow >= 0 && jumpRow < 8 && jumpCol >= 0 && jumpCol < 8) {
+                        const midPiece = board[midRow]?.[midCol];
+                        const jumpCell = board[jumpRow]?.[jumpCol];
 
-        function aiMove() {
-            const aiMoves = [];
-            for (let r = 0; r < 8; r++) {
-                for (let c = 0; c < 8; c++) {
-                    if (board[r][c] === 2 || board[r][c] === 4) {
-                        aiMoves.push(...getValidMoves(r, c));
+                        if (midPiece > 0 && midPiece % 2 !== piece % 2 && jumpCell === 0) {
+                            captures.push({
+                                fromRow: row,
+                                fromCol: col,
+                                toRow: jumpRow,
+                                toCol: jumpCol,
+                                isCapture: true,
+                                capturedRow: midRow,
+                                capturedCol: midCol
+                            });
+                        }
                     }
                 }
             }
 
-            if (aiMoves.length > 0) {
-                const captureMoves = aiMoves.filter(m => m.cap);
-                const move = captureMoves.length > 0 ?
-                    captureMoves[Math.floor(Math.random() * captureMoves.length)] :
-                    aiMoves[Math.floor(Math.random() * aiMoves.length)];
-                doMove(move);
+            return captures;
+        }
+
+        // Yurishni amalga oshirish
+        function makeMove(move) {
+            const piece = board[move.fromRow][move.fromCol];
+
+            // Asl donani o'chirish
+            board[move.fromRow][move.fromCol] = 0;
+
+            // Yangi joyga qo'yish
+            board[move.toRow][move.toCol] = piece;
+
+            // Agar urish bo'lsa, raqib donasini olib tashlash
+            if (move.isCapture) {
+                board[move.capturedRow][move.capturedCol] = 0;
+            }
+
+            // Damkaga aylantirish (oxirgi qatorga yetganda)
+            if (piece === 1 && move.toRow === 0) {
+                board[move.toRow][move.toCol] = 3; // Oq damka
+            } else if (piece === 2 && move.toRow === 7) {
+                board[move.toRow][move.toCol] = 4; // Qora damka
+            }
+
+            // Urishdan keyin yana urish imkoniyati bormi?
+            if (move.isCapture) {
+                const nextCaptures = findCaptures(
+                    move.toRow,
+                    move.toCol,
+                    board[move.toRow][move.toCol],
+                    board[move.toRow][move.toCol] === 3 || board[move.toRow][move.toCol] === 4,
+                    board[move.toRow][move.toCol] === 1 || board[move.toRow][move.toCol] === 3
+                );
+
+                if (nextCaptures.length > 0) {
+                    // Yana urish mumkin, tanlovni saqlash
+                    selectedPiece = { row: move.toRow, col: move.toCol };
+                    validMoves = nextCaptures;
+                    renderBoard();
+                    return;
+                }
+            }
+
+            // Navbatni almashtirish
+            currentPlayer = currentPlayer === 1 ? 2 : 1;
+            selectedPiece = null;
+            validMoves = [];
+
+            // Urish majburiyatlarini tekshirish
+            checkMustCapture();
+
+            // O'yin tugaganligini tekshirish
+            checkGameOver();
+
+            renderBoard();
+            updateStatus();
+
+            // AI navbati
+            if (mode === 'ai' && currentPlayer === 2 && gameActive) {
+                setTimeout(makeAIMove, 500);
             }
         }
 
-        function updateStatus() {
-            const statusEl = document.getElementById('status');
-            if (mode === 'ai') {
-                statusEl.innerHTML = currentPlayer === 1 ? "⚪ Sizning navbatingiz" : "⚫ AI o'ylamoqda...";
+        // Urish majburiyatlarini tekshirish
+        function checkMustCapture() {
+            mustCapturePieces = [];
+
+            if (currentPlayer === 1) {
+                // Oq donalar uchun urish majburiyatini tekshirish
+                for (let row = 0; row < 8; row++) {
+                    for (let col = 0; col < 8; col++) {
+                        const piece = board[row][col];
+                        if (piece === 1 || piece === 3) {
+                            const captures = findCaptures(
+                                row, col, piece,
+                                piece === 3,
+                                true
+                            );
+                            if (captures.length > 0) {
+                                mustCapturePieces.push({ row, col });
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Urish majburiy bo'lsa, warning ko'rsatish
+            if (mustCapturePieces.length > 0 && currentPlayer === 1) {
+                captureWarning.style.display = 'block';
             } else {
-                statusEl.innerHTML = currentPlayer === 1 ? "⚪ Sizning navbatingiz" : "⚫ Raqib navbati";
+                captureWarning.style.display = 'none';
             }
         }
 
+        // AI yurishi
+        function makeAIMove() {
+            if (!gameActive || currentPlayer !== 2) return;
+
+            aiThinking = true;
+            updateStatus();
+
+            setTimeout(() => {
+                // Barcha qora donalarni topish
+                const blackPieces = [];
+                for (let row = 0; row < 8; row++) {
+                    for (let col = 0; col < 8; col++) {
+                        const piece = board[row][col];
+                        if (piece === 2 || piece === 4) {
+                            blackPieces.push({ row, col, piece });
+                        }
+                    }
+                }
+
+                // Barcha mumkin bo'lgan yurishlarni topish
+                let allMoves = [];
+                for (const p of blackPieces) {
+                    const moves = getValidMovesForAI(p.row, p.col);
+                    allMoves = allMoves.concat(moves);
+                }
+
+                if (allMoves.length > 0) {
+                    // Urishlarni ustun qo'yish
+                    const captureMoves = allMoves.filter(m => m.isCapture);
+                    let selectedMove;
+
+                    if (captureMoves.length > 0) {
+                        // Agar bir nechta urish imkoniyati bo'lsa, birini tanlash
+                        selectedMove = captureMoves[Math.floor(Math.random() * captureMoves.length)];
+
+                        // Ketma-ket urishlarni tekshirish
+                        makeMove(selectedMove);
+
+                        // Yana urish imkoniyati bormi?
+                        setTimeout(() => {
+                            if (gameActive && currentPlayer === 2) {
+                                checkAIContinueCapture(selectedMove.toRow, selectedMove.toCol);
+                            }
+                        }, 300);
+                    } else {
+                        // Oddiy yurish
+                        selectedMove = allMoves[Math.floor(Math.random() * allMoves.length)];
+                        makeMove(selectedMove);
+                    }
+                } else {
+                    // Yurish qolmasa, o'yin tugagan
+                    gameActive = false;
+                    statusElement.innerHTML = "⚪ Siz yutdingiz!";
+                }
+
+                aiThinking = false;
+                updateStatus();
+            }, 500);
+        }
+
+        // AI uchun yurishlarni hisoblash
+        function getValidMovesForAI(row, col) {
+            const piece = board[row][col];
+            if (piece === 0) return [];
+
+            const moves = [];
+            const isKing = (piece === 4);
+            const isBlack = (piece === 2 || piece === 4);
+
+            // Urishlarni topish
+            const captureMoves = findCaptures(row, col, piece, isKing, !isBlack);
+
+            if (captureMoves.length > 0) {
+                return captureMoves;
+            }
+
+            // Oddiy yurishlar
+            const directions = isKing ? [[-1,-1], [-1,1], [1,-1], [1,1]]
+                                    : [[1,-1], [1,1]]; // Qora dona pastga yuradi
+
+            for (const [dr, dc] of directions) {
+                const newRow = row + dr;
+                const newCol = col + dc;
+
+                if (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8) {
+                    if (board[newRow][newCol] === 0) {
+                        moves.push({
+                            fromRow: row,
+                            fromCol: col,
+                            toRow: newRow,
+                            toCol: newCol,
+                            isCapture: false,
+                            capturedRow: null,
+                            capturedCol: null
+                        });
+                    }
+                }
+            }
+
+            return moves;
+        }
+
+        // AI ning ketma-ket urishini tekshirish
+        function checkAIContinueCapture(row, col) {
+            const piece = board[row][col];
+            if (!piece) return;
+
+            const nextCaptures = findCaptures(
+                row, col, piece,
+                piece === 4,
+                false
+            );
+
+            if (nextCaptures.length > 0 && gameActive && currentPlayer === 2) {
+                setTimeout(() => {
+                    const move = nextCaptures[0];
+                    makeMove(move);
+
+                    // Yana tekshirish
+                    setTimeout(() => {
+                        checkAIContinueCapture(move.toRow, move.toCol);
+                    }, 300);
+                }, 300);
+            }
+        }
+
+        // O'yin tugaganligini tekshirish
         function checkGameOver() {
             let whiteExists = false;
             let blackExists = false;
+            let whiteMoves = false;
+            let blackMoves = false;
 
-            for (let r = 0; r < 8; r++) {
-                for (let c = 0; c < 8; c++) {
-                    if (board[r][c] === 1 || board[r][c] === 3) whiteExists = true;
-                    if (board[r][c] === 2 || board[r][c] === 4) blackExists = true;
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    const piece = board[row][col];
+                    if (piece === 1 || piece === 3) {
+                        whiteExists = true;
+                        if (getValidMoves(row, col).length > 0) {
+                            whiteMoves = true;
+                        }
+                    } else if (piece === 2 || piece === 4) {
+                        blackExists = true;
+                        if (getValidMovesForAI(row, col).length > 0) {
+                            blackMoves = true;
+                        }
+                    }
                 }
             }
 
-            if (!whiteExists) {
-                document.getElementById('status').innerHTML = "⚫ Raqib yutdi!";
-                gameOver = true;
+            if (!whiteExists || !whiteMoves) {
+                gameActive = false;
+                statusElement.innerHTML = "⚫ Raqib yutdi!";
+
+                // Natijani botga yuborish
                 tg.sendData(JSON.stringify({
                     action: 'game_over',
-                    winner_id: userId
+                    winner_id: 'ai',
+                    game_type: 'checkers'
                 }));
-            } else if (!blackExists) {
-                document.getElementById('status').innerHTML = "⚪ Siz yutdingiz!";
-                gameOver = true;
+            } else if (!blackExists || !blackMoves) {
+                gameActive = false;
+                statusElement.innerHTML = "⚪ Siz yutdingiz!";
+
+                // Natijani botga yuborish
                 tg.sendData(JSON.stringify({
                     action: 'game_over',
-                    winner_id: userId
+                    winner_id: userId,
+                    game_type: 'checkers'
                 }));
             }
         }
 
-        tg.onEvent('webAppData', (data) => {
-            try {
-                const response = JSON.parse(data.data);
-                if (Array.isArray(response)) {
-                    updateFriendsList(response);
+        // Statusni yangilash
+        function updateStatus() {
+            if (!gameActive) return;
+
+            if (mode === 'ai') {
+                if (currentPlayer === 1) {
+                    statusElement.innerHTML = mustCapturePieces.length > 0
+                        ? "⚠️ Raqib donasini oling (majburiy)"
+                        : "⚪ Sizning navbatingiz";
+                } else {
+                    statusElement.innerHTML = aiThinking
+                        ? "⚫ AI o'ylamoqda..."
+                        : "⚫ AI navbati";
                 }
-            } catch (e) {
-                console.error('Ma\'lumotni o\'qish xatosi:', e);
             }
+        }
+
+        // Chiqish funksiyalari
+        function showExitConfirm() {
+            document.getElementById('exitModal').style.display = 'block';
+        }
+
+        function closeExitModal() {
+            document.getElementById('exitModal').style.display = 'none';
+        }
+
+        function confirmExit() {
+            tg.close();
+        }
+
+        // Qayta boshlash
+        function restartGame() {
+            initBoard();
+            currentPlayer = 1;
+            selectedPiece = null;
+            validMoves = [];
+            gameActive = true;
+            aiThinking = false;
+            mustCapturePieces = [];
+            captureWarning.style.display = 'none';
+            renderBoard();
+            updateStatus();
+        }
+
+        // O'yinni boshlash
+        initBoard();
+        renderBoard();
+        setPlayerNames();
+
+        // Telegram WebApp ma'lumotlarini qabul qilish
+        tg.onEvent('webAppData', (data) => {
+            console.log('WebApp data:', data);
         });
     </script>
 </body>

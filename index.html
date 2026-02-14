@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Shashka Online - 5 Darajali AI</title>
+    <title>Shashka Online - AI bilan</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -21,14 +21,142 @@
             padding: 10px;
         }
 
-        .game-container {
-            width: 100%;
+        .container {
             max-width: 400px;
+            margin: 0 auto;
+        }
+
+        /* AI DARAJASINI TANLASH SAHIFASI */
+        .level-selector {
+            background: #34495e;
+            border-radius: 25px;
+            padding: 20px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .level-selector h1 {
+            text-align: center;
+            color: #f1c40f;
+            font-size: 28px;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        .level-selector h2 {
+            text-align: center;
+            color: #ecf0f1;
+            font-size: 18px;
+            margin-bottom: 25px;
+            font-weight: normal;
+        }
+
+        .level-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .level-card {
+            background: #2c3e50;
+            border: 2px solid #4a6782;
+            border-radius: 20px;
+            padding: 20px 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .level-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .level-card.selected {
+            border-color: #f1c40f;
+            background: #3a4e68;
+            box-shadow: 0 0 20px rgba(241, 196, 15, 0.3);
+        }
+
+        .level-card.selected::before {
+            content: '✓';
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            color: #f1c40f;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .level-icon {
+            font-size: 40px;
+            margin-bottom: 8px;
+        }
+
+        .level-name {
+            font-weight: bold;
+            color: #ecf0f1;
+            margin-bottom: 4px;
+        }
+
+        .level-desc {
+            font-size: 12px;
+            color: #bdc3c7;
+        }
+
+        .level-rating {
+            font-size: 11px;
+            color: #f1c40f;
+            margin-top: 5px;
+        }
+
+        .level-1 { border-left: 5px solid #27ae60; }
+        .level-2 { border-left: 5px solid #3498db; }
+        .level-3 { border-left: 5px solid #e67e22; }
+        .level-4 { border-left: 5px solid #9b59b6; }
+        .level-5 { border-left: 5px solid #c0392b; }
+
+        .play-btn {
+            width: 100%;
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 16px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 5px 0 #1e8449;
+            margin-top: 10px;
+        }
+
+        .play-btn:active {
+            transform: translateY(5px);
+            box-shadow: 0 0 0 #1e8449;
+        }
+
+        .play-btn:disabled {
+            background: #7f8c8d;
+            box-shadow: 0 5px 0 #5a6268;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        /* O'YIN SAHIFASI */
+        .game-container {
             background: #34495e;
             border-radius: 25px;
             padding: 15px;
-            margin: 0 auto;
             box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+            animation: fadeIn 0.3s ease;
         }
 
         .game-title {
@@ -42,7 +170,7 @@
 
         .ai-level-info {
             background: #2c3e50;
-            padding: 10px;
+            padding: 12px;
             border-radius: 15px;
             margin-bottom: 15px;
             display: flex;
@@ -54,10 +182,13 @@
         .ai-level-badge {
             background: #e67e22;
             color: white;
-            padding: 5px 15px;
+            padding: 6px 18px;
             border-radius: 20px;
             font-weight: bold;
             font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
         .ai-level-name {
@@ -77,7 +208,7 @@
             justify-content: space-between;
             align-items: center;
             background: #2c3e50;
-            padding: 10px;
+            padding: 12px;
             border-radius: 15px;
             margin-bottom: 15px;
             border: 1px solid #4a6782;
@@ -285,6 +416,11 @@
             color: white;
         }
 
+        .btn-back {
+            background: #3498db;
+            color: white;
+        }
+
         .winner-modal {
             display: none;
             position: fixed;
@@ -357,145 +493,9 @@
             color: white;
         }
 
-        .friends-container {
-            background: #34495e;
-            border-radius: 25px;
-            padding: 20px;
-            max-width: 400px;
-            margin: 0 auto;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.4);
-        }
-
-        .friends-header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .friends-header h2 {
-            color: #f1c40f;
-            font-size: 24px;
-            margin-bottom: 10px;
-        }
-
-        .room-code {
-            background: #2c3e50;
-            padding: 15px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            border: 2px solid #f1c40f;
-        }
-
-        .room-code p {
-            color: #ecf0f1;
-            font-size: 14px;
-            margin-bottom: 5px;
-        }
-
-        .room-code .code {
-            color: #f1c40f;
-            font-size: 28px;
-            font-weight: bold;
-            letter-spacing: 5px;
-        }
-
-        .friends-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            max-height: 400px;
-            overflow-y: auto;
-            padding: 5px;
-        }
-
-        .friend-item {
-            background: #2c3e50;
-            border-radius: 15px;
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border: 1px solid #4a6782;
-            transition: all 0.3s ease;
-        }
-
-        .friend-item.online {
-            border-left: 5px solid #2ecc71;
-        }
-
-        .friend-item.offline {
-            border-left: 5px solid #7f8c8d;
-            opacity: 0.7;
-        }
-
-        .friend-info {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .friend-name {
-            font-weight: bold;
-            color: #ecf0f1;
-            font-size: 16px;
-        }
-
-        .friend-rating {
-            color: #f1c40f;
-            font-size: 12px;
-        }
-
-        .friend-status {
-            font-size: 11px;
-        }
-
-        .online .friend-status {
-            color: #2ecc71;
-        }
-
-        .offline .friend-status {
-            color: #7f8c8d;
-        }
-
-        .invite-btn {
-            background: #e67e22;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            padding: 10px 15px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: 0 4px 0 #a04000;
-        }
-
-        .invite-btn:active {
-            transform: translateY(4px);
-            box-shadow: 0 0 0 #a04000;
-        }
-
-        .invite-btn:disabled {
-            background: #7f8c8d;
-            box-shadow: 0 4px 0 #5a6268;
-            cursor: not-allowed;
-        }
-
-        .back-btn {
+        .winner-btn.change-level {
             background: #3498db;
             color: white;
-            border: none;
-            border-radius: 10px;
-            padding: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.2s;
-            margin-top: 15px;
-            width: 100%;
-            box-shadow: 0 4px 0 #2980b9;
-        }
-
-        .back-btn:active {
-            transform: translateY(4px);
-            box-shadow: 0 0 0 #2980b9;
         }
 
         .notification {
@@ -523,13 +523,6 @@
                 opacity: 1;
             }
         }
-
-        .loading {
-            text-align: center;
-            color: #f1c40f;
-            padding: 20px;
-            font-size: 16px;
-        }
     </style>
 </head>
 <body>
@@ -548,17 +541,64 @@
         const gameType = params.get('game') || 'checkers';
         const roomCode = params.get('room');
         const playerRole = params.get('player') || 'host';
-        const aiLevel = parseInt(params.get('level') || '1');
+        const urlAiLevel = parseInt(params.get('level') || '0');
         const hash = params.get('hash');
 
         // AI darajalari
         const aiLevels = {
-            1: { name: 'Oson', icon: '🇶', desc: 'Yangi boshlovchi', color: '#27ae60', rating: 1200 },
-            2: { name: 'O\'rtacha', icon: '🇰', desc: 'Oddiy o\'yinchi', color: '#3498db', rating: 1400 },
-            3: { name: 'Qiyin', icon: '🇯', desc: 'Tajribali', color: '#e67e22', rating: 1600 },
-            4: { name: 'Mutaxassis', icon: '🇶', desc: 'Usta', color: '#9b59b6', rating: 1800 },
-            5: { name: 'Grandmaster', icon: '👑', desc: 'Professional', color: '#c0392b', rating: 2000 }
+            1: {
+                name: 'Oson',
+                icon: '🇶',
+                desc: 'Yangi boshlovchi',
+                color: '#27ae60',
+                rating: 1200,
+                bgClass: 'level-1'
+            },
+            2: {
+                name: 'O\'rtacha',
+                icon: '🇰',
+                desc: 'Oddiy o\'yinchi',
+                color: '#3498db',
+                rating: 1400,
+                bgClass: 'level-2'
+            },
+            3: {
+                name: 'Qiyin',
+                icon: '🇯',
+                desc: 'Tajribali',
+                color: '#e67e22',
+                rating: 1600,
+                bgClass: 'level-3'
+            },
+            4: {
+                name: 'Mutaxassis',
+                icon: '🇶',
+                desc: 'Usta',
+                color: '#9b59b6',
+                rating: 1800,
+                bgClass: 'level-4'
+            },
+            5: {
+                name: 'Grandmaster',
+                icon: '👑',
+                desc: 'Professional',
+                color: '#c0392b',
+                rating: 2000,
+                bgClass: 'level-5'
+            }
         };
+
+        // Holat
+        let selectedLevel = null;
+        let gameStarted = false;
+        let currentAiLevel = urlAiLevel > 0 ? urlAiLevel : null;
+        let board = [];
+        let currentPlayer = 1;
+        let selectedPiece = null;
+        let validMoves = [];
+        let gameActive = true;
+        let aiThinking = false;
+        let winner = null;
 
         // WebApp ochilganda online statusini yuborish
         tg.sendData(JSON.stringify({
@@ -577,7 +617,7 @@
                 room_code: roomCode
             }));
 
-            if (mode === 'ai' && gameActive) {
+            if (mode === 'ai' && gameStarted) {
                 saveGameState();
             }
         });
@@ -585,7 +625,7 @@
         // O'yin holatini saqlash
         function saveGameState() {
             try {
-                localStorage.setItem(`currentGame_${gameType}_${mode}_${aiLevel}`, JSON.stringify({
+                localStorage.setItem(`currentGame_${gameType}_${mode}_${currentAiLevel}`, JSON.stringify({
                     board: board,
                     currentPlayer: currentPlayer,
                     gameActive: gameActive,
@@ -609,120 +649,173 @@
             return false;
         };
 
-        // Sahifani yuklash
-        window.addEventListener('load', function() {
-            if (mode === 'ai') {
-                const savedGame = localStorage.getItem(`currentGame_${gameType}_${mode}_${aiLevel}`);
-                if (savedGame) {
-                    try {
-                        const gameState = JSON.parse(savedGame);
-                        if (gameState.board && Date.now() - gameState.timestamp < 3600000) {
-                            board = gameState.board;
-                            currentPlayer = gameState.currentPlayer;
-                            gameActive = gameState.gameActive;
-                        }
-                    } catch(e) {
-                        console.log('Saqlangan o\'yin topilmadi');
-                    }
-                }
-            }
-        });
-
-        if (mode === 'friend' && !playerRole && !roomCode) {
-            showFriendsList();
+        // Asosiy logika
+        if (mode === 'ai' && urlAiLevel === 0) {
+            // AI darajasini tanlash sahifasini ko'rsatish
+            showLevelSelector();
+        } else if (mode === 'ai' && urlAiLevel > 0) {
+            // To'g'ridan-to'g'ri o'yinni boshlash (agar level berilgan bo'lsa)
+            currentAiLevel = urlAiLevel;
+            startGame();
         } else {
-            showGame();
+            // Boshqa rejimlar (do'st bilan, xonalar)
+            startGame();
         }
 
-        async function showFriendsList() {
+        // AI darajasini tanlash sahifasi
+        function showLevelSelector() {
             const app = document.getElementById('app');
             app.innerHTML = `
-                <div class="friends-container">
-                    <div class="friends-header">
-                        <h2>👥 DO'STLAR RO'YXATI</h2>
+                <div class="container">
+                    <div class="level-selector">
+                        <h1>🤖 AI DARAJASI</h1>
+                        <h2>${gameType === 'checkers' ? '🎯 Shashka' : '♟️ Shaxmat'}</h2>
+
+                        <div class="level-grid" id="levelGrid">
+                            ${[1,2,3,4,5].map(level => {
+                                const lvl = aiLevels[level];
+                                return `
+                                    <div class="level-card ${lvl.bgClass}" data-level="${level}" onclick="selectLevel(${level})">
+                                        <div class="level-icon">${lvl.icon}</div>
+                                        <div class="level-name">${lvl.name}</div>
+                                        <div class="level-desc">${lvl.desc}</div>
+                                        <div class="level-rating">★ ${lvl.rating}</div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+
+                        <button class="play-btn" id="playBtn" onclick="startGameWithSelectedLevel()" disabled>
+                            🎮 O'YINNI BOSHLASH
+                        </button>
                     </div>
-                    <div class="room-code">
-                        <p>Xona kodi:</p>
-                        <div class="code">${roomCode || 'XXXXXX'}</div>
+                </div>
+            `;
+        }
+
+        // Darajani tanlash
+        window.selectLevel = function(level) {
+            selectedLevel = level;
+
+            // Eski tanlanganlarni tozalash
+            document.querySelectorAll('.level-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+
+            // Yangi tanlanganni belgilash
+            document.querySelector(`[data-level="${level}"]`).classList.add('selected');
+
+            // O'ynash tugmasini faollashtirish
+            document.getElementById('playBtn').disabled = false;
+
+            // Vibratsiya (agar qo'llab-quvvatlansa)
+            if (tg.HapticFeedback) {
+                tg.HapticFeedback.impactOccurred('light');
+            }
+        };
+
+        // Tanlangan daraja bilan o'yinni boshlash
+        window.startGameWithSelectedLevel = function() {
+            if (selectedLevel) {
+                currentAiLevel = selectedLevel;
+
+                // Vibratsiya
+                if (tg.HapticFeedback) {
+                    tg.HapticFeedback.impactOccurred('medium');
+                }
+
+                startGame();
+            }
+        };
+
+        // O'yinni boshlash
+        function startGame() {
+            gameStarted = true;
+            const app = document.getElementById('app');
+            const aiInfo = aiLevels[currentAiLevel];
+
+            app.innerHTML = `
+                <div class="container">
+                    <div class="game-container">
+                        <div class="game-title">${gameType === 'checkers' ? '🎯 SHAHKA' : '♟️ SHAXMAT'}</div>
+
+                        <div class="ai-level-info">
+                            <div class="ai-level-badge" style="background: ${aiInfo.color}">
+                                ${aiInfo.icon} ${aiInfo.name}
+                            </div>
+                            <div class="ai-level-name">${currentAiLevel}/5 daraja</div>
+                        </div>
+
+                        <div class="players-panel">
+                            <div class="player-section">
+                                <span class="player-label">SIZ</span>
+                                <span class="player-name">${userName}</span>
+                                <span class="player-rating" id="playerRating">★ 1200</span>
+                            </div>
+                            <div class="vs-badge">VS</div>
+                            <div class="player-section">
+                                <span class="player-label">RAQIB</span>
+                                <span class="player-name">AI ${aiInfo.icon} ${aiInfo.name}</span>
+                                <span class="player-rating" id="opponentRating">★ ${aiInfo.rating}</span>
+                            </div>
+                        </div>
+
+                        <div class="board-wrapper">
+                            <div id="board" class="board"></div>
+                        </div>
+
+                        <div id="status" class="status-bar">⚪ Sizning navbatingiz</div>
+
+                        <div class="buttons-panel">
+                            <button class="btn btn-exit" onclick="exitGame()">
+                                <span>🚪</span> Chiqish
+                            </button>
+                            <button class="btn btn-restart" onclick="restartGame()">
+                                <span>🔄</span> Qayta boshlash
+                            </button>
+                        </div>
                     </div>
-                    <div id="friendsList" class="friends-list">
-                        <div class="loading">⏳ Yuklanmoqda...</div>
+
+                    <div id="winnerModal" class="winner-modal">
+                        <div class="winner-content">
+                            <h2>🏆 G'OLIB</h2>
+                            <p id="winnerName">O'yinchi</p>
+                            <div class="winner-buttons">
+                                <button class="winner-btn restart" onclick="restartGameAfterWin()">🔄 Qayta</button>
+                                <button class="winner-btn change-level" onclick="changeLevel()">🎯 Darajani o'zgartirish</button>
+                                <button class="winner-btn exit" onclick="exitGame()">🚪 Chiqish</button>
+                            </div>
+                        </div>
                     </div>
-                    <button class="back-btn" onclick="closeWebApp()">🔙 Yopish</button>
                 </div>
             `;
 
-            tg.sendData(JSON.stringify({
-                action: 'get_users',
-                user_id: userId
-            }));
-
-            tg.onEvent('webAppData', function(data) {
-                try {
-                    const friends = JSON.parse(data.data);
-                    displayFriendsList(friends);
-                } catch (e) {
-                    console.error('Do\'stlar ro\'yxatini yuklashda xatolik:', e);
-                }
-            });
+            initGame();
         }
 
-        function displayFriendsList(friends) {
-            const friendsList = document.getElementById('friendsList');
+        // Darajani o'zgartirish
+        window.changeLevel = function() {
+            closeWinnerModal();
+            currentAiLevel = null;
+            selectedLevel = null;
+            gameStarted = false;
+            showLevelSelector();
+        };
 
-            if (!friends || friends.length === 0) {
-                friendsList.innerHTML = `
-                    <div style="text-align: center; color: #f1c40f; padding: 20px;">
-                        😕 Hozircha boshqa foydalanuvchilar yo'q.<br>
-                        Botdan foydalanayotgan do'stlaringiz bo'lishi kerak!
-                    </div>
-                `;
-                return;
+        // O'yindan chiqish
+        window.exitGame = function() {
+            if (!gameActive && winner) {
+                const isWinner = (winner === userName);
+                tg.sendData(JSON.stringify({
+                    action: 'game_over',
+                    user_id: userId,
+                    winner_id: isWinner ? userId : null,
+                    game_type: gameType,
+                    ai_level: currentAiLevel,
+                    room_code: roomCode
+                }));
             }
 
-            friendsList.innerHTML = friends.map(friend => `
-                <div class="friend-item ${friend.online ? 'online' : 'offline'}">
-                    <div class="friend-info">
-                        <span class="friend-name">${friend.name}</span>
-                        <span class="friend-rating">★ ${friend[gameType + '_rating'] || 1200}</span>
-                        <span class="friend-status">${friend.online ? '🟢 Online' : '⚫ Offline'}</span>
-                    </div>
-                    <button class="invite-btn" onclick="inviteFriend(${friend.id}, '${friend.name}')" ${!friend.online ? 'disabled' : ''}>
-                        📨 Taklif qilish
-                    </button>
-                </div>
-            `).join('');
-        }
-
-        function inviteFriend(friendId, friendName) {
-            tg.sendData(JSON.stringify({
-                action: 'invite_friend',
-                from_id: userId,
-                from_name: userName,
-                to_id: friendId,
-                game_type: gameType,
-                room_code: roomCode
-            }));
-
-            showNotification(`✅ Taklif ${friendName} ga yuborildi!`);
-
-            setTimeout(() => {
-                closeWebApp();
-            }, 1500);
-        }
-
-        function showNotification(message) {
-            const notification = document.createElement('div');
-            notification.className = 'notification';
-            notification.textContent = message;
-            document.body.appendChild(notification);
-
-            setTimeout(() => {
-                notification.remove();
-            }, 3000);
-        }
-
-        function closeWebApp() {
             tg.sendData(JSON.stringify({
                 action: 'close_webapp',
                 user_id: userId,
@@ -732,109 +825,9 @@
             setTimeout(() => {
                 tg.close();
             }, 100);
-        }
-
-        function showGame() {
-            const app = document.getElementById('app');
-            const aiInfo = aiLevels[aiLevel] || aiLevels[1];
-
-            let opponentName = '';
-            if (mode === 'ai') {
-                opponentName = `AI ${aiInfo.icon} ${aiInfo.name}`;
-            } else if (playerRole === 'host') {
-                opponentName = 'Kutilyapti...';
-            } else {
-                opponentName = 'Do\'st';
-            }
-
-            app.innerHTML = `
-                <div class="game-container">
-                    <div class="game-title">${gameType === 'checkers' ? '🎯 SHAHKA' : '♟️ SHAXMAT'}</div>
-
-                    ${mode === 'ai' ? `
-                        <div class="ai-level-info">
-                            <div>
-                                <span class="ai-level-badge" style="background: ${aiInfo.color}">
-                                    ${aiInfo.icon} ${aiInfo.name}
-                                </span>
-                                <div class="ai-level-desc">${aiInfo.desc}</div>
-                            </div>
-                            <div class="ai-level-name">${aiLevel}/5 daraja</div>
-                        </div>
-                    ` : ''}
-
-                    <div class="players-panel">
-                        <div class="player-section">
-                            <span class="player-label">SIZ</span>
-                            <span class="player-name" id="playerName">${userName}</span>
-                            <span class="player-rating" id="playerRating">★ 1200</span>
-                        </div>
-                        <div class="vs-badge">VS</div>
-                        <div class="player-section">
-                            <span class="player-label">RAQIB</span>
-                            <span class="player-name" id="opponentName">${opponentName}</span>
-                            <span class="player-rating" id="opponentRating">
-                                ${mode === 'ai' ? `★ ${aiInfo.rating}` : '★ 1200'}
-                            </span>
-                        </div>
-                    </div>
-
-                    <div class="board-wrapper">
-                        <div id="board" class="board"></div>
-                    </div>
-
-                    <div id="status" class="status-bar">⚪ Sizning navbatingiz</div>
-
-                    <div class="buttons-panel">
-                        <button class="btn btn-exit" onclick="exitGame()">
-                            <span>🚪</span> Chiqish
-                        </button>
-                        <button class="btn btn-restart" onclick="restartGame()">
-                            <span>🔄</span> Qayta boshlash
-                        </button>
-                    </div>
-                </div>
-
-                <div id="winnerModal" class="winner-modal">
-                    <div class="winner-content">
-                        <h2>🏆 G'OLIB</h2>
-                        <p id="winnerName">O'yinchi</p>
-                        <div class="winner-buttons">
-                            <button class="winner-btn restart" onclick="restartGameAfterWin()">🔄 Qayta</button>
-                            <button class="winner-btn exit" onclick="exitGame()">🚪 Chiqish</button>
-                        </div>
-                    </div>
-                </div>
-            `;
-
-            initGame();
-        }
-
-        function exitGame() {
-            if (!gameActive && winner) {
-                const isWinner = (winner === userName);
-                tg.sendData(JSON.stringify({
-                    action: 'game_over',
-                    user_id: userId,
-                    winner_id: isWinner ? userId : null,
-                    game_type: gameType,
-                    ai_level: mode === 'ai' ? aiLevel : null,
-                    room_code: roomCode
-                }));
-            }
-
-            closeWebApp();
-        }
+        };
 
         // ==================== O'YIN LOGIKASI ====================
-        let board = [];
-        let currentPlayer = 1;
-        let selectedPiece = null;
-        let validMoves = [];
-        let gameActive = true;
-        let aiThinking = false;
-        let winner = null;
-
         function initBoard() {
             board = [
                 [0,2,0,2,0,2,0,2],
@@ -851,8 +844,27 @@
         function initGame() {
             initBoard();
             renderBoard();
+            updateStatus();
 
-            if (mode === 'ai' && aiLevel >= 4 && Math.random() > 0.5) {
+            // Avvalgi o'yinni tiklash
+            const savedGame = localStorage.getItem(`currentGame_${gameType}_${mode}_${currentAiLevel}`);
+            if (savedGame) {
+                try {
+                    const gameState = JSON.parse(savedGame);
+                    if (gameState.board && Date.now() - gameState.timestamp < 3600000) {
+                        board = gameState.board;
+                        currentPlayer = gameState.currentPlayer;
+                        gameActive = gameState.gameActive;
+                        renderBoard();
+                        updateStatus();
+                    }
+                } catch(e) {
+                    console.log('Saqlangan o\'yin topilmadi');
+                }
+            }
+
+            // Agar AI birinchi bo'lishi kerak bo'lsa
+            if (currentAiLevel >= 4 && Math.random() > 0.5 && currentPlayer === 2) {
                 setTimeout(makeAIMove, 1000);
             }
         }
@@ -908,6 +920,18 @@
             }
         }
 
+        function showValidMoves() {
+            validMoves.forEach(move => {
+                const cells = document.querySelectorAll('.cell');
+                const index = move.toRow * 8 + move.toCol;
+                if (cells[index]) {
+                    const hint = document.createElement('div');
+                    hint.className = move.isCapture ? 'capture-hint' : 'hint';
+                    cells[index].appendChild(hint);
+                }
+            });
+        }
+
         function selectPiece(row, col) {
             const allCaptures = getAllCaptures(1);
             if (allCaptures.length > 0) {
@@ -925,18 +949,6 @@
 
             selectedPiece = { row, col };
             renderBoard();
-        }
-
-        function showValidMoves() {
-            validMoves.forEach(move => {
-                const cells = document.querySelectorAll('.cell');
-                const index = move.toRow * 8 + move.toCol;
-                if (cells[index]) {
-                    const hint = document.createElement('div');
-                    hint.className = move.isCapture ? 'capture-hint' : 'hint';
-                    cells[index].appendChild(hint);
-                }
-            });
         }
 
         function handleCellClick(row, col) {
@@ -1110,12 +1122,10 @@
             renderBoard();
             updateStatus();
 
-            if (mode === 'ai') {
-                saveGameState();
-            }
+            saveGameState();
 
-            if (mode === 'ai' && currentPlayer === 2 && gameActive) {
-                setTimeout(makeAIMove, 500 + (aiLevel * 100));
+            if (currentPlayer === 2 && gameActive) {
+                setTimeout(makeAIMove, 500 + (currentAiLevel * 100));
             }
         }
 
@@ -1146,7 +1156,7 @@
             let selectedMove = null;
 
             if (aiCaptures.length > 0) {
-                switch(aiLevel) {
+                switch(currentAiLevel) {
                     case 1:
                         selectedMove = aiCaptures[Math.floor(Math.random() * aiCaptures.length)];
                         break;
@@ -1203,7 +1213,7 @@
                         break;
                 }
             } else if (aiPieces.length > 0) {
-                switch(aiLevel) {
+                switch(currentAiLevel) {
                     case 1:
                     case 2:
                         selectedMove = aiPieces[Math.floor(Math.random() * aiPieces.length)];
@@ -1297,8 +1307,8 @@
 
             if (!whiteExists || (whiteExists && !whiteMoves)) {
                 gameActive = false;
-                winner = mode === 'ai' ? 'AI' : (playerRole === 'host' ? 'Mehmon' : 'Xona egasi');
-                showWinner(winner);
+                winner = 'AI';
+                showWinner('AI');
             } else if (!blackExists || (blackExists && !blackMoves)) {
                 gameActive = false;
                 winner = userName;
@@ -1312,19 +1322,11 @@
 
             if (!gameActive) return;
 
-            if (mode === 'ai') {
-                if (currentPlayer === 1) {
-                    statusElement.innerHTML = "⚪ Sizning navbatingiz";
-                } else {
-                    const aiInfo = aiLevels[aiLevel];
-                    statusElement.innerHTML = `⚫ ${aiInfo.icon} AI navbati (${aiInfo.name})`;
-                }
+            if (currentPlayer === 1) {
+                statusElement.innerHTML = "⚪ Sizning navbatingiz";
             } else {
-                if (currentPlayer === 1) {
-                    statusElement.innerHTML = "⚪ Sizning navbatingiz";
-                } else {
-                    statusElement.innerHTML = "⚫ Raqib navbati";
-                }
+                const aiInfo = aiLevels[currentAiLevel];
+                statusElement.innerHTML = `⚫ ${aiInfo.icon} AI navbati (${aiInfo.name})`;
             }
         }
 
@@ -1341,10 +1343,30 @@
                     user_id: userId,
                     winner_id: isWinner ? userId : null,
                     game_type: gameType,
-                    ai_level: mode === 'ai' ? aiLevel : null,
+                    ai_level: currentAiLevel,
                     room_code: roomCode
                 }));
+
+                // Vibratsiya
+                if (tg.HapticFeedback) {
+                    if (isWinner) {
+                        tg.HapticFeedback.notificationOccurred('success');
+                    } else {
+                        tg.HapticFeedback.notificationOccurred('error');
+                    }
+                }
             }
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 2000);
         }
 
         function closeWinnerModal() {
@@ -1370,7 +1392,7 @@
             renderBoard();
             updateStatus();
 
-            localStorage.removeItem(`currentGame_${gameType}_${mode}_${aiLevel}`);
+            localStorage.removeItem(`currentGame_${gameType}_${mode}_${currentAiLevel}`);
         }
     </script>
 </body>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Shashka Online - To'liq qoidalar</title>
+    <title>Shashka Online</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -16,41 +16,41 @@
         }
 
         body {
-            background: #1e3c5c;
+            background: #2b4b6f;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            color: white;
-            padding: 12px;
+            padding: 10px;
         }
 
         .game-container {
             width: 100%;
             max-width: 400px;
-            background: white;
-            border-radius: 30px;
-            padding: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            background: #34495e;
+            border-radius: 25px;
+            padding: 15px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.4);
         }
 
         .game-title {
             text-align: center;
             font-size: 24px;
             font-weight: bold;
-            color: #1e3c5c;
+            color: #f1c40f;
             margin-bottom: 10px;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.3);
         }
 
         .players-panel {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: #f5f5f5;
-            padding: 12px;
-            border-radius: 20px;
+            background: #2c3e50;
+            padding: 10px;
+            border-radius: 15px;
             margin-bottom: 15px;
-            border: 2px solid #e0e0e0;
+            border: 1px solid #4a6782;
         }
 
         .player-section {
@@ -63,14 +63,14 @@
 
         .player-label {
             font-size: 11px;
-            color: #666;
+            color: #bdc3c7;
             text-transform: uppercase;
         }
 
         .player-name {
             font-weight: bold;
             font-size: 14px;
-            color: #333;
+            color: #ecf0f1;
             max-width: 100px;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -79,12 +79,12 @@
 
         .player-rating {
             font-size: 11px;
-            color: #f39c12;
+            color: #f1c40f;
             font-weight: bold;
         }
 
         .vs-badge {
-            background: #e74c3c;
+            background: #e67e22;
             padding: 4px 12px;
             border-radius: 20px;
             font-weight: bold;
@@ -93,18 +93,18 @@
         }
 
         .board-wrapper {
-            background: #d9a066;
+            background: #d35400;
             padding: 12px;
             border-radius: 20px;
             margin-bottom: 15px;
-            box-shadow: inset 0 -3px 0 #b87c4b;
+            box-shadow: inset 0 -3px 0 #a04000;
         }
 
         .board {
             display: grid;
             grid-template-columns: repeat(8, 1fr);
             aspect-ratio: 1/1;
-            border: 3px solid #8b5a2b;
+            border: 3px solid #6b2e00;
             border-radius: 12px;
             overflow: hidden;
         }
@@ -120,11 +120,11 @@
         }
 
         .light {
-            background: #f0d9b5;
+            background: #f5e6d3;  /* Och krem rangi */
         }
 
         .dark {
-            background: #b58863;
+            background: #b06e4b;  /* To'q jigarrang */
         }
 
         .piece {
@@ -138,19 +138,21 @@
             position: relative;
             transition: all 0.2s ease;
             font-size: 24px;
-            box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+            box-shadow: 0 4px 0 rgba(0,0,0,0.3), 0 0 10px rgba(255,255,255,0.2);
         }
 
         .piece.white {
-            background: #ffffff;
-            border: 2px solid #cccccc;
+            background: #ffffff;  /* Sof oq */
+            border: 2px solid #e0e0e0;
             color: #333;
+            box-shadow: 0 4px 0 #cccccc, 0 0 15px rgba(255,255,255,0.5);
         }
 
         .piece.black {
-            background: #333333;
-            border: 2px solid #666666;
+            background: #222222;  /* To'q qora */
+            border: 2px solid #444444;
             color: #fff;
+            box-shadow: 0 4px 0 #000000, 0 0 15px rgba(0,0,0,0.5);
         }
 
         .piece.king::after {
@@ -160,13 +162,13 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            text-shadow: 0 2px 3px rgba(0,0,0,0.3);
+            text-shadow: 0 2px 5px rgba(0,0,0,0.5);
         }
 
         .selected {
             transform: scale(1.1);
-            box-shadow: 0 0 15px #f39c12, 0 4px 0 #b87c4b;
-            border: 3px solid #f39c12 !important;
+            box-shadow: 0 0 20px #f1c40f, 0 4px 0 #b8860b;
+            border: 3px solid #f1c40f !important;
             z-index: 10;
         }
 
@@ -175,9 +177,9 @@
         }
 
         @keyframes mustCapture {
-            0% { box-shadow: 0 0 10px #e74c3c; }
-            50% { box-shadow: 0 0 20px #e74c3c; }
-            100% { box-shadow: 0 0 10px #e74c3c; }
+            0% { box-shadow: 0 0 10px #e74c3c, 0 4px 0 #c0392b; }
+            50% { box-shadow: 0 0 20px #e74c3c, 0 4px 0 #c0392b; }
+            100% { box-shadow: 0 0 10px #e74c3c, 0 4px 0 #c0392b; }
         }
 
         .hint {
@@ -188,14 +190,14 @@
             cursor: pointer;
             animation: pulse 1.5s infinite;
             border: 3px solid white;
-            box-shadow: 0 0 10px #2ecc71;
+            box-shadow: 0 0 15px #2ecc71;
             position: absolute;
             z-index: 5;
         }
 
         .capture-hint {
             background: #e74c3c;
-            box-shadow: 0 0 10px #e74c3c;
+            box-shadow: 0 0 15px #e74c3c;
             width: 22px;
             height: 22px;
         }
@@ -207,15 +209,27 @@
         }
 
         .status-bar {
-            background: #f5f5f5;
+            background: #2c3e50;
             padding: 12px;
             border-radius: 15px;
             text-align: center;
             margin-bottom: 15px;
             font-weight: bold;
-            font-size: 15px;
-            color: #333;
-            border: 2px solid #e0e0e0;
+            font-size: 16px;
+            color: #f1c40f;
+            border: 1px solid #4a6782;
+        }
+
+        .capture-warning {
+            background: #e74c3c;
+            color: white;
+            padding: 8px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            font-size: 13px;
+            font-weight: bold;
+            text-align: center;
+            display: none;
         }
 
         .buttons-panel {
@@ -228,7 +242,7 @@
             flex: 1;
             padding: 12px;
             border: none;
-            border-radius: 15px;
+            border-radius: 12px;
             font-weight: bold;
             font-size: 14px;
             cursor: pointer;
@@ -237,16 +251,16 @@
             align-items: center;
             justify-content: center;
             gap: 5px;
-            box-shadow: 0 4px 0 rgba(0,0,0,0.1);
+            box-shadow: 0 4px 0 rgba(0,0,0,0.2);
         }
 
         .btn:active {
             transform: translateY(2px);
-            box-shadow: 0 2px 0 rgba(0,0,0,0.1);
+            box-shadow: 0 2px 0 rgba(0,0,0,0.2);
         }
 
         .btn-exit {
-            background: #e74c3c;
+            background: #e67e22;
             color: white;
         }
 
@@ -255,33 +269,15 @@
             color: white;
         }
 
-        .btn-invite {
+        .ai-info {
             background: #3498db;
             color: white;
-        }
-
-        .ai-info {
-            background: #f0f8ff;
-            padding: 10px;
-            border-radius: 12px;
-            margin-bottom: 12px;
-            text-align: center;
-            border: 2px dashed #3498db;
-            color: #2980b9;
-            font-size: 13px;
-            display: none;
-        }
-
-        .capture-warning {
-            background: #ffeaa7;
-            color: #d63031;
             padding: 8px;
             border-radius: 10px;
             margin-bottom: 10px;
-            font-size: 12px;
-            font-weight: bold;
             text-align: center;
-            display: none;
+            font-size: 13px;
+            font-weight: bold;
         }
 
         .modal {
@@ -291,30 +287,36 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.8);
+            background: rgba(0,0,0,0.7);
             z-index: 1000;
             backdrop-filter: blur(5px);
         }
 
         .modal-content {
-            background: white;
-            margin: 20% auto;
+            background: #34495e;
+            margin: 40% auto;
             padding: 20px;
             width: 90%;
-            max-width: 300px;
+            max-width: 280px;
             border-radius: 20px;
             text-align: center;
+            border: 2px solid #f1c40f;
         }
 
         .modal h3 {
-            color: #1e3c5c;
+            color: #f1c40f;
             margin-bottom: 10px;
+            font-size: 20px;
+        }
+
+        .modal p {
+            color: white;
+            margin-bottom: 20px;
         }
 
         .modal-buttons {
             display: flex;
             gap: 10px;
-            margin-top: 20px;
         }
 
         .modal-btn {
@@ -326,13 +328,13 @@
             cursor: pointer;
         }
 
-        .modal-btn.confirm {
-            background: #e74c3c;
+        .modal-btn.cancel {
+            background: #7f8c8d;
             color: white;
         }
 
-        .modal-btn.cancel {
-            background: #95a5a6;
+        .modal-btn.confirm {
+            background: #e67e22;
             color: white;
         }
     </style>
@@ -379,7 +381,7 @@
         </div>
     </div>
 
-    <!-- Chiqish tasdiqlash modal -->
+    <!-- Chiqish modal -->
     <div id="exitModal" class="modal">
         <div class="modal-content">
             <h3>🚪 O'yindan chiqish</h3>
@@ -404,12 +406,12 @@
 
         // O'yin holati
         let board = [];
-        let currentPlayer = 1; // 1 - oq (odam), 2 - qora (AI)
+        let currentPlayer = 1; // 1 - oq, 2 - qora
         let selectedPiece = null;
         let validMoves = [];
         let gameActive = true;
         let aiThinking = false;
-        let mustCapturePieces = []; // Urish majburiy bo'lgan donalar
+        let mustCapturePieces = [];
 
         // DOM elementlar
         const boardElement = document.getElementById('board');
@@ -423,26 +425,18 @@
             document.getElementById('aiInfo').style.display = 'block';
         }
 
-        // Boshlang'ich taxtani yaratish
+        // Boshlang'ich taxta
         function initBoard() {
             board = [
-                [0,2,0,2,0,2,0,2], // 0-qator: qora donalar
-                [2,0,2,0,2,0,2,0], // 1-qator: qora donalar
-                [0,2,0,2,0,2,0,2], // 2-qator: qora donalar
-                [0,0,0,0,0,0,0,0], // 3-qator: bo'sh
-                [0,0,0,0,0,0,0,0], // 4-qator: bo'sh
-                [1,0,1,0,1,0,1,0], // 5-qator: oq donalar
-                [0,1,0,1,0,1,0,1], // 6-qator: oq donalar
-                [1,0,1,0,1,0,1,0]  // 7-qator: oq donalar
+                [0,2,0,2,0,2,0,2],
+                [2,0,2,0,2,0,2,0],
+                [0,2,0,2,0,2,0,2],
+                [0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0],
+                [1,0,1,0,1,0,1,0],
+                [0,1,0,1,0,1,0,1],
+                [1,0,1,0,1,0,1,0]
             ];
-
-            // 1-3 qatorlar qora (2), 6-8 qatorlar oq (1)
-            // 3 va 4 qiymatlar damka (king) uchun
-        }
-
-        // O'yinchi nomlarini o'rnatish
-        function setPlayerNames() {
-            // Bu funksiya kerak emas, lekin xatolik chiqmasligi uchun qoldiramiz
         }
 
         // Taxtani chizish
@@ -467,17 +461,14 @@
                             pieceDiv.classList.add('king');
                         }
 
-                        // Tanlangan donani belgilash
                         if (selectedPiece && selectedPiece.row === row && selectedPiece.col === col) {
                             pieceDiv.classList.add('selected');
                         }
 
-                        // Urish majburiy bo'lgan donalarni belgilash
                         if (mustCapturePieces.some(p => p.row === row && p.col === col)) {
                             pieceDiv.classList.add('must-capture');
                         }
 
-                        // Faqat o'z navbatida va o'yin davom etayotganda donani tanlash mumkin
                         if (gameActive && currentPlayer === 1 && isWhite) {
                             pieceDiv.onclick = (e) => {
                                 e.stopPropagation();
@@ -487,7 +478,6 @@
 
                         cell.appendChild(pieceDiv);
                     } else {
-                        // Bo'sh kataklarni bosganda yurish amalga oshiriladi
                         if (gameActive && currentPlayer === 1) {
                             cell.onclick = () => handleCellClick(row, col);
                         }
@@ -497,13 +487,11 @@
                 }
             }
 
-            // Yurish mumkin bo'lgan kataklarni ko'rsatish
             showValidMoves();
         }
 
-        // Yurish mumkin bo'lgan kataklarni ko'rsatish
+        // Yurish mumkin bo'lgan joylarni ko'rsatish
         function showValidMoves() {
-            // Avval eski hintlarni tozalash
             document.querySelectorAll('.hint').forEach(h => h.remove());
 
             if (!gameActive || currentPlayer !== 1) return;
@@ -524,17 +512,15 @@
             if (!gameActive || currentPlayer !== 1) return;
 
             const piece = board[row][col];
-            if (piece !== 1 && piece !== 3) return; // Faqat oq donalar
+            if (piece !== 1 && piece !== 3) return;
 
-            // Urish majburiy bo'lsa, faqat ura oladigan donalarni tanlash mumkin
             if (mustCapturePieces.length > 0) {
                 if (!mustCapturePieces.some(p => p.row === row && p.col === col)) {
-                    statusElement.innerHTML = "⚠️ Urish majburiy! Raqib donasini oling";
+                    statusElement.innerHTML = "⚠️ Urish majburiy!";
                     return;
                 }
             }
 
-            // Tanlangan dona uchun mumkin bo'lgan yurishlarni hisoblash
             const moves = getValidMoves(row, col);
 
             if (moves.length > 0) {
@@ -544,23 +530,21 @@
             }
         }
 
-        // Bo'sh katakni bosish
+        // Katakni bosish
         function handleCellClick(row, col) {
             if (!selectedPiece || !gameActive || currentPlayer !== 1) return;
 
-            // Tanlangan yurishni topish
             const move = validMoves.find(m => m.toRow === row && m.toCol === col);
             if (move) {
                 makeMove(move);
             } else {
-                // Boshqa katak bosilsa, tanlovni bekor qilish
                 selectedPiece = null;
                 validMoves = [];
                 renderBoard();
             }
         }
 
-        // Mumkin bo'lgan yurishlarni hisoblash
+        // Mumkin bo'lgan yurishlarni topish
         function getValidMoves(row, col) {
             const piece = board[row][col];
             if (piece === 0) return [];
@@ -569,23 +553,15 @@
             const isKing = (piece === 3 || piece === 4);
             const isWhite = (piece === 1 || piece === 3);
 
-            // QOIDALAR:
-            // 1. Oddiy dona faqat oldinga diagonal yuradi
-            // 2. Damka oldinga va orqaga diagonal yuradi
-            // 3. Urish majburiy
-            // 4. Bir necha donani ketma-ket urish mumkin
-
-            // Urishlarni topish (majburiy)
+            // Urishlarni topish
             const captureMoves = findCaptures(row, col, piece, isKing, isWhite);
 
             if (captureMoves.length > 0) {
-                // Agar urish mumkin bo'lsa, faqat urishlarni qaytarish
                 return captureMoves;
             }
 
-            // Agar urish majburiy bo'lmasa, oddiy yurishlarni topish
+            // Oddiy yurishlar (faqat urish majburiy bo'lmasa)
             if (mustCapturePieces.length === 0) {
-                // Oddiy yurishlar
                 const directions = isKing ? [[-1,-1], [-1,1], [1,-1], [1,1]]
                                         : (isWhite ? [[-1,-1], [-1,1]] : [[1,-1], [1,1]]);
 
@@ -618,7 +594,6 @@
             const directions = [[-1,-1], [-1,1], [1,-1], [1,1]];
 
             for (const [dr, dc] of directions) {
-                // Damka uchun - uzoq masofaga urish
                 if (isKing) {
                     let distance = 1;
                     while (true) {
@@ -642,14 +617,13 @@
                                 capturedRow: midRow,
                                 capturedCol: midCol
                             });
-                            break; // Birinchi to'xtatilgan donani urish
+                            break;
                         }
 
-                        if (midPiece !== 0) break; // To'siq bor
+                        if (midPiece !== 0) break;
                         distance++;
                     }
                 } else {
-                    // Oddiy dona uchun
                     const midRow = row + dr;
                     const midCol = col + dc;
                     const jumpRow = row + dr * 2;
@@ -681,25 +655,19 @@
         function makeMove(move) {
             const piece = board[move.fromRow][move.fromCol];
 
-            // Asl donani o'chirish
             board[move.fromRow][move.fromCol] = 0;
-
-            // Yangi joyga qo'yish
             board[move.toRow][move.toCol] = piece;
 
-            // Agar urish bo'lsa, raqib donasini olib tashlash
             if (move.isCapture) {
                 board[move.capturedRow][move.capturedCol] = 0;
             }
 
-            // Damkaga aylantirish (oxirgi qatorga yetganda)
             if (piece === 1 && move.toRow === 0) {
-                board[move.toRow][move.toCol] = 3; // Oq damka
+                board[move.toRow][move.toCol] = 3;
             } else if (piece === 2 && move.toRow === 7) {
-                board[move.toRow][move.toCol] = 4; // Qora damka
+                board[move.toRow][move.toCol] = 4;
             }
 
-            // Urishdan keyin yana urish imkoniyati bormi?
             if (move.isCapture) {
                 const nextCaptures = findCaptures(
                     move.toRow,
@@ -710,7 +678,6 @@
                 );
 
                 if (nextCaptures.length > 0) {
-                    // Yana urish mumkin, tanlovni saqlash
                     selectedPiece = { row: move.toRow, col: move.toCol };
                     validMoves = nextCaptures;
                     renderBoard();
@@ -718,41 +685,31 @@
                 }
             }
 
-            // Navbatni almashtirish
             currentPlayer = currentPlayer === 1 ? 2 : 1;
             selectedPiece = null;
             validMoves = [];
 
-            // Urish majburiyatlarini tekshirish
             checkMustCapture();
-
-            // O'yin tugaganligini tekshirish
             checkGameOver();
 
             renderBoard();
             updateStatus();
 
-            // AI navbati
             if (mode === 'ai' && currentPlayer === 2 && gameActive) {
                 setTimeout(makeAIMove, 500);
             }
         }
 
-        // Urish majburiyatlarini tekshirish
+        // Urish majburiyatini tekshirish
         function checkMustCapture() {
             mustCapturePieces = [];
 
             if (currentPlayer === 1) {
-                // Oq donalar uchun urish majburiyatini tekshirish
                 for (let row = 0; row < 8; row++) {
                     for (let col = 0; col < 8; col++) {
                         const piece = board[row][col];
                         if (piece === 1 || piece === 3) {
-                            const captures = findCaptures(
-                                row, col, piece,
-                                piece === 3,
-                                true
-                            );
+                            const captures = findCaptures(row, col, piece, piece === 3, true);
                             if (captures.length > 0) {
                                 mustCapturePieces.push({ row, col });
                             }
@@ -761,12 +718,7 @@
                 }
             }
 
-            // Urish majburiy bo'lsa, warning ko'rsatish
-            if (mustCapturePieces.length > 0 && currentPlayer === 1) {
-                captureWarning.style.display = 'block';
-            } else {
-                captureWarning.style.display = 'none';
-            }
+            captureWarning.style.display = mustCapturePieces.length > 0 && currentPlayer === 1 ? 'block' : 'none';
         }
 
         // AI yurishi
@@ -777,7 +729,6 @@
             updateStatus();
 
             setTimeout(() => {
-                // Barcha qora donalarni topish
                 const blackPieces = [];
                 for (let row = 0; row < 8; row++) {
                     for (let col = 0; col < 8; col++) {
@@ -788,7 +739,6 @@
                     }
                 }
 
-                // Barcha mumkin bo'lgan yurishlarni topish
                 let allMoves = [];
                 for (const p of blackPieces) {
                     const moves = getValidMovesForAI(p.row, p.col);
@@ -796,30 +746,23 @@
                 }
 
                 if (allMoves.length > 0) {
-                    // Urishlarni ustun qo'yish
                     const captureMoves = allMoves.filter(m => m.isCapture);
                     let selectedMove;
 
                     if (captureMoves.length > 0) {
-                        // Agar bir nechta urish imkoniyati bo'lsa, birini tanlash
                         selectedMove = captureMoves[Math.floor(Math.random() * captureMoves.length)];
-
-                        // Ketma-ket urishlarni tekshirish
                         makeMove(selectedMove);
 
-                        // Yana urish imkoniyati bormi?
                         setTimeout(() => {
                             if (gameActive && currentPlayer === 2) {
                                 checkAIContinueCapture(selectedMove.toRow, selectedMove.toCol);
                             }
                         }, 300);
                     } else {
-                        // Oddiy yurish
                         selectedMove = allMoves[Math.floor(Math.random() * allMoves.length)];
                         makeMove(selectedMove);
                     }
                 } else {
-                    // Yurish qolmasa, o'yin tugagan
                     gameActive = false;
                     statusElement.innerHTML = "⚪ Siz yutdingiz!";
                 }
@@ -829,25 +772,21 @@
             }, 500);
         }
 
-        // AI uchun yurishlarni hisoblash
+        // AI uchun yurishlarni topish
         function getValidMovesForAI(row, col) {
             const piece = board[row][col];
             if (piece === 0) return [];
 
             const moves = [];
             const isKing = (piece === 4);
-            const isBlack = (piece === 2 || piece === 4);
 
-            // Urishlarni topish
-            const captureMoves = findCaptures(row, col, piece, isKing, !isBlack);
+            const captureMoves = findCaptures(row, col, piece, isKing, false);
 
             if (captureMoves.length > 0) {
                 return captureMoves;
             }
 
-            // Oddiy yurishlar
-            const directions = isKing ? [[-1,-1], [-1,1], [1,-1], [1,1]]
-                                    : [[1,-1], [1,1]]; // Qora dona pastga yuradi
+            const directions = isKing ? [[-1,-1], [-1,1], [1,-1], [1,1]] : [[1,-1], [1,1]];
 
             for (const [dr, dc] of directions) {
                 const newRow = row + dr;
@@ -871,23 +810,18 @@
             return moves;
         }
 
-        // AI ning ketma-ket urishini tekshirish
+        // AI ketma-ket urishi
         function checkAIContinueCapture(row, col) {
             const piece = board[row][col];
             if (!piece) return;
 
-            const nextCaptures = findCaptures(
-                row, col, piece,
-                piece === 4,
-                false
-            );
+            const nextCaptures = findCaptures(row, col, piece, piece === 4, false);
 
             if (nextCaptures.length > 0 && gameActive && currentPlayer === 2) {
                 setTimeout(() => {
                     const move = nextCaptures[0];
                     makeMove(move);
 
-                    // Yana tekshirish
                     setTimeout(() => {
                         checkAIContinueCapture(move.toRow, move.toCol);
                     }, 300);
@@ -907,14 +841,10 @@
                     const piece = board[row][col];
                     if (piece === 1 || piece === 3) {
                         whiteExists = true;
-                        if (getValidMoves(row, col).length > 0) {
-                            whiteMoves = true;
-                        }
+                        if (getValidMoves(row, col).length > 0) whiteMoves = true;
                     } else if (piece === 2 || piece === 4) {
                         blackExists = true;
-                        if (getValidMovesForAI(row, col).length > 0) {
-                            blackMoves = true;
-                        }
+                        if (getValidMovesForAI(row, col).length > 0) blackMoves = true;
                     }
                 }
             }
@@ -922,23 +852,11 @@
             if (!whiteExists || !whiteMoves) {
                 gameActive = false;
                 statusElement.innerHTML = "⚫ Raqib yutdi!";
-
-                // Natijani botga yuborish
-                tg.sendData(JSON.stringify({
-                    action: 'game_over',
-                    winner_id: 'ai',
-                    game_type: 'checkers'
-                }));
+                tg.sendData(JSON.stringify({ action: 'game_over', winner_id: 'ai' }));
             } else if (!blackExists || !blackMoves) {
                 gameActive = false;
                 statusElement.innerHTML = "⚪ Siz yutdingiz!";
-
-                // Natijani botga yuborish
-                tg.sendData(JSON.stringify({
-                    action: 'game_over',
-                    winner_id: userId,
-                    game_type: 'checkers'
-                }));
+                tg.sendData(JSON.stringify({ action: 'game_over', winner_id: userId }));
             }
         }
 
@@ -949,12 +867,10 @@
             if (mode === 'ai') {
                 if (currentPlayer === 1) {
                     statusElement.innerHTML = mustCapturePieces.length > 0
-                        ? "⚠️ Raqib donasini oling (majburiy)"
+                        ? "⚠️ Raqib donasini oling"
                         : "⚪ Sizning navbatingiz";
                 } else {
-                    statusElement.innerHTML = aiThinking
-                        ? "⚫ AI o'ylamoqda..."
-                        : "⚫ AI navbati";
+                    statusElement.innerHTML = aiThinking ? "⚫ AI o'ylamoqda..." : "⚫ AI navbati";
                 }
             }
         }
@@ -989,12 +905,6 @@
         // O'yinni boshlash
         initBoard();
         renderBoard();
-        setPlayerNames();
-
-        // Telegram WebApp ma'lumotlarini qabul qilish
-        tg.onEvent('webAppData', (data) => {
-            console.log('WebApp data:', data);
-        });
     </script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Shashka Online</title>
+    <title>Shashka Online - 5 Darajali AI</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -17,9 +17,6 @@
 
         body {
             background: #2b4b6f;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             min-height: 100vh;
             padding: 10px;
         }
@@ -30,6 +27,7 @@
             background: #34495e;
             border-radius: 25px;
             padding: 15px;
+            margin: 0 auto;
             box-shadow: 0 15px 30px rgba(0,0,0,0.4);
         }
 
@@ -40,6 +38,38 @@
             color: #f1c40f;
             margin-bottom: 10px;
             text-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        .ai-level-info {
+            background: #2c3e50;
+            padding: 10px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 2px solid #f1c40f;
+        }
+
+        .ai-level-badge {
+            background: #e67e22;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .ai-level-name {
+            color: #f1c40f;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .ai-level-desc {
+            color: #bdc3c7;
+            font-size: 12px;
+            margin-top: 5px;
         }
 
         .players-panel {
@@ -172,40 +202,38 @@
             z-index: 10;
         }
 
-        .must-capture {
-            animation: mustCapture 1.5s infinite;
-        }
-
-        @keyframes mustCapture {
-            0% { box-shadow: 0 0 10px #e74c3c, 0 4px 0 #c0392b; }
-            50% { box-shadow: 0 0 20px #e74c3c, 0 4px 0 #c0392b; }
-            100% { box-shadow: 0 0 10px #e74c3c, 0 4px 0 #c0392b; }
-        }
-
         .hint {
-            width: 18px;
-            height: 18px;
-            background: #2ecc71;
+            width: 20px;
+            height: 20px;
+            background: rgba(46, 204, 113, 0.6);
             border-radius: 50%;
-            cursor: pointer;
-            animation: pulse 1.5s infinite;
-            border: 3px solid white;
-            box-shadow: 0 0 15px #2ecc71;
             position: absolute;
-            z-index: 5;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            border: 2px solid #27ae60;
+            animation: pulse 1s infinite;
         }
 
         .capture-hint {
-            background: #e74c3c;
-            box-shadow: 0 0 15px #e74c3c;
-            width: 22px;
-            height: 22px;
+            width: 30px;
+            height: 30px;
+            background: rgba(231, 76, 60, 0.6);
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            border: 2px solid #c0392b;
+            animation: pulse 0.5s infinite;
         }
 
         @keyframes pulse {
-            0% { transform: scale(1); opacity: 0.9; }
-            50% { transform: scale(1.2); opacity: 1; }
-            100% { transform: scale(1); opacity: 0.9; }
+            0% { opacity: 0.5; transform: translate(-50%, -50%) scale(0.8); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+            100% { opacity: 0.5; transform: translate(-50%, -50%) scale(0.8); }
         }
 
         .status-bar {
@@ -255,17 +283,6 @@
         .btn-restart {
             background: #27ae60;
             color: white;
-        }
-
-        .ai-info {
-            background: #3498db;
-            color: white;
-            padding: 8px;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            text-align: center;
-            font-size: 13px;
-            font-weight: bold;
         }
 
         .winner-modal {
@@ -340,171 +357,484 @@
             color: white;
         }
 
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.7);
-            z-index: 1000;
-            backdrop-filter: blur(5px);
-        }
-
-        .modal-content {
+        .friends-container {
             background: #34495e;
-            margin: 40% auto;
+            border-radius: 25px;
             padding: 20px;
-            width: 90%;
-            max-width: 280px;
-            border-radius: 20px;
+            max-width: 400px;
+            margin: 0 auto;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+        }
+
+        .friends-header {
             text-align: center;
-            border: 2px solid #f1c40f;
-        }
-
-        .modal h3 {
-            color: #f1c40f;
-            margin-bottom: 10px;
-            font-size: 20px;
-        }
-
-        .modal p {
-            color: white;
             margin-bottom: 20px;
         }
 
-        .modal-buttons {
-            display: flex;
-            gap: 10px;
+        .friends-header h2 {
+            color: #f1c40f;
+            font-size: 24px;
+            margin-bottom: 10px;
         }
 
-        .modal-btn {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            border-radius: 10px;
+        .room-code {
+            background: #2c3e50;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 2px solid #f1c40f;
+        }
+
+        .room-code p {
+            color: #ecf0f1;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .room-code .code {
+            color: #f1c40f;
+            font-size: 28px;
             font-weight: bold;
-            cursor: pointer;
+            letter-spacing: 5px;
         }
 
-        .modal-btn.cancel {
-            background: #7f8c8d;
-            color: white;
+        .friends-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 5px;
         }
 
-        .modal-btn.confirm {
+        .friend-item {
+            background: #2c3e50;
+            border-radius: 15px;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #4a6782;
+            transition: all 0.3s ease;
+        }
+
+        .friend-item.online {
+            border-left: 5px solid #2ecc71;
+        }
+
+        .friend-item.offline {
+            border-left: 5px solid #7f8c8d;
+            opacity: 0.7;
+        }
+
+        .friend-info {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .friend-name {
+            font-weight: bold;
+            color: #ecf0f1;
+            font-size: 16px;
+        }
+
+        .friend-rating {
+            color: #f1c40f;
+            font-size: 12px;
+        }
+
+        .friend-status {
+            font-size: 11px;
+        }
+
+        .online .friend-status {
+            color: #2ecc71;
+        }
+
+        .offline .friend-status {
+            color: #7f8c8d;
+        }
+
+        .invite-btn {
             background: #e67e22;
             color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 0 #a04000;
+        }
+
+        .invite-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #a04000;
+        }
+
+        .invite-btn:disabled {
+            background: #7f8c8d;
+            box-shadow: 0 4px 0 #5a6268;
+            cursor: not-allowed;
+        }
+
+        .back-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 15px;
+            width: 100%;
+            box-shadow: 0 4px 0 #2980b9;
+        }
+
+        .back-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #2980b9;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #27ae60;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-weight: bold;
+            z-index: 1000;
+            animation: slideDown 0.3s ease;
+            box-shadow: 0 4px 0 #1e8449;
+        }
+
+        @keyframes slideDown {
+            from {
+                top: -50px;
+                opacity: 0;
+            }
+            to {
+                top: 20px;
+                opacity: 1;
+            }
+        }
+
+        .loading {
+            text-align: center;
+            color: #f1c40f;
+            padding: 20px;
+            font-size: 16px;
         }
     </style>
 </head>
 <body>
-    <div class="game-container">
-        <div class="game-title">🎯 SHAHKA ONLINE</div>
-
-        <div class="players-panel">
-            <div class="player-section">
-                <span class="player-label">SIZ</span>
-                <span class="player-name" id="playerName">O'yinchi</span>
-                <span class="player-rating" id="playerRating">★ 1200</span>
-            </div>
-            <div class="vs-badge">VS</div>
-            <div class="player-section">
-                <span class="player-label">RAQIB</span>
-                <span class="player-name" id="opponentName">AI Bot</span>
-                <span class="player-rating" id="opponentRating">★ 1200</span>
-            </div>
-        </div>
-
-        <div id="aiInfo" class="ai-info" style="display: none;">
-            🤖 AI botga qarshi o'ynamoqdasiz
-        </div>
-
-        <div class="board-wrapper">
-            <div id="board" class="board"></div>
-        </div>
-
-        <div id="status" class="status-bar">⚪ Sizning navbatingiz</div>
-
-        <div class="buttons-panel">
-            <button class="btn btn-exit" onclick="showExitConfirm()">
-                <span>🚪</span> Chiqish
-            </button>
-            <button class="btn btn-restart" onclick="restartGame()">
-                <span>🔄</span> Qayta boshlash
-            </button>
-        </div>
-    </div>
-
-    <!-- G'olib modal -->
-    <div id="winnerModal" class="winner-modal">
-        <div class="winner-content">
-            <h2>🏆 G'OLIB</h2>
-            <p id="winnerName">O'yinchi</p>
-            <div class="winner-buttons">
-                <button class="winner-btn restart" onclick="restartGameAfterWin()">🔄 Qayta</button>
-                <button class="winner-btn exit" onclick="closeWinnerModal()">🚪 Chiqish</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Chiqish modal -->
-    <div id="exitModal" class="modal">
-        <div class="modal-content">
-            <h3>🚪 O'yindan chiqish</h3>
-            <p>O'yindan chiqishni xohlaysizmi?</p>
-            <div class="modal-buttons">
-                <button class="modal-btn cancel" onclick="closeExitModal()">Bekor qilish</button>
-                <button class="modal-btn confirm" onclick="confirmExit()">Chiqish</button>
-            </div>
-        </div>
-    </div>
+    <div id="app"></div>
 
     <script>
         const tg = Telegram.WebApp;
         tg.expand();
         tg.ready();
 
-        // URL parametrlari
+        // URL parametrlarini olish
         const params = new URLSearchParams(window.location.search);
         const userId = params.get('user') || 'user_' + Math.random();
         const userName = params.get('name') || 'O\'yinchi';
         const mode = params.get('mode') || 'ai';
+        const gameType = params.get('game') || 'checkers';
         const roomCode = params.get('room');
-        const playerRole = params.get('player');
+        const playerRole = params.get('player') || 'host';
+        const aiLevel = parseInt(params.get('level') || '1');
+        const hash = params.get('hash');
 
-        // O'yin holati
+        // AI darajalari
+        const aiLevels = {
+            1: { name: 'Oson', icon: '🇶', desc: 'Yangi boshlovchi', color: '#27ae60', rating: 1200 },
+            2: { name: 'O\'rtacha', icon: '🇰', desc: 'Oddiy o\'yinchi', color: '#3498db', rating: 1400 },
+            3: { name: 'Qiyin', icon: '🇯', desc: 'Tajribali', color: '#e67e22', rating: 1600 },
+            4: { name: 'Mutaxassis', icon: '🇶', desc: 'Usta', color: '#9b59b6', rating: 1800 },
+            5: { name: 'Grandmaster', icon: '👑', desc: 'Professional', color: '#c0392b', rating: 2000 }
+        };
+
+        // WebApp ochilganda online statusini yuborish
+        tg.sendData(JSON.stringify({
+            action: 'user_online',
+            user_id: userId,
+            online: true,
+            room_code: roomCode
+        }));
+
+        // WebApp yopilganda
+        window.addEventListener('beforeunload', function() {
+            tg.sendData(JSON.stringify({
+                action: 'user_online',
+                user_id: userId,
+                online: false,
+                room_code: roomCode
+            }));
+
+            if (mode === 'ai' && gameActive) {
+                saveGameState();
+            }
+        });
+
+        // O'yin holatini saqlash
+        function saveGameState() {
+            try {
+                localStorage.setItem(`currentGame_${gameType}_${mode}_${aiLevel}`, JSON.stringify({
+                    board: board,
+                    currentPlayer: currentPlayer,
+                    gameActive: gameActive,
+                    timestamp: Date.now()
+                }));
+            } catch(e) {
+                console.log('Saqlash xatosi:', e);
+            }
+        }
+
+        // Xatoliklarni qayd qilish
+        window.onerror = function(msg, url, lineNo, columnNo, error) {
+            console.error('Xatolik:', msg, 'satr:', lineNo);
+            tg.sendData(JSON.stringify({
+                action: 'error_log',
+                error: msg,
+                line: lineNo,
+                url: window.location.href,
+                user_id: userId
+            }));
+            return false;
+        };
+
+        // Sahifani yuklash
+        window.addEventListener('load', function() {
+            if (mode === 'ai') {
+                const savedGame = localStorage.getItem(`currentGame_${gameType}_${mode}_${aiLevel}`);
+                if (savedGame) {
+                    try {
+                        const gameState = JSON.parse(savedGame);
+                        if (gameState.board && Date.now() - gameState.timestamp < 3600000) {
+                            board = gameState.board;
+                            currentPlayer = gameState.currentPlayer;
+                            gameActive = gameState.gameActive;
+                        }
+                    } catch(e) {
+                        console.log('Saqlangan o\'yin topilmadi');
+                    }
+                }
+            }
+        });
+
+        if (mode === 'friend' && !playerRole && !roomCode) {
+            showFriendsList();
+        } else {
+            showGame();
+        }
+
+        async function showFriendsList() {
+            const app = document.getElementById('app');
+            app.innerHTML = `
+                <div class="friends-container">
+                    <div class="friends-header">
+                        <h2>👥 DO'STLAR RO'YXATI</h2>
+                    </div>
+                    <div class="room-code">
+                        <p>Xona kodi:</p>
+                        <div class="code">${roomCode || 'XXXXXX'}</div>
+                    </div>
+                    <div id="friendsList" class="friends-list">
+                        <div class="loading">⏳ Yuklanmoqda...</div>
+                    </div>
+                    <button class="back-btn" onclick="closeWebApp()">🔙 Yopish</button>
+                </div>
+            `;
+
+            tg.sendData(JSON.stringify({
+                action: 'get_users',
+                user_id: userId
+            }));
+
+            tg.onEvent('webAppData', function(data) {
+                try {
+                    const friends = JSON.parse(data.data);
+                    displayFriendsList(friends);
+                } catch (e) {
+                    console.error('Do\'stlar ro\'yxatini yuklashda xatolik:', e);
+                }
+            });
+        }
+
+        function displayFriendsList(friends) {
+            const friendsList = document.getElementById('friendsList');
+
+            if (!friends || friends.length === 0) {
+                friendsList.innerHTML = `
+                    <div style="text-align: center; color: #f1c40f; padding: 20px;">
+                        😕 Hozircha boshqa foydalanuvchilar yo'q.<br>
+                        Botdan foydalanayotgan do'stlaringiz bo'lishi kerak!
+                    </div>
+                `;
+                return;
+            }
+
+            friendsList.innerHTML = friends.map(friend => `
+                <div class="friend-item ${friend.online ? 'online' : 'offline'}">
+                    <div class="friend-info">
+                        <span class="friend-name">${friend.name}</span>
+                        <span class="friend-rating">★ ${friend[gameType + '_rating'] || 1200}</span>
+                        <span class="friend-status">${friend.online ? '🟢 Online' : '⚫ Offline'}</span>
+                    </div>
+                    <button class="invite-btn" onclick="inviteFriend(${friend.id}, '${friend.name}')" ${!friend.online ? 'disabled' : ''}>
+                        📨 Taklif qilish
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function inviteFriend(friendId, friendName) {
+            tg.sendData(JSON.stringify({
+                action: 'invite_friend',
+                from_id: userId,
+                from_name: userName,
+                to_id: friendId,
+                game_type: gameType,
+                room_code: roomCode
+            }));
+
+            showNotification(`✅ Taklif ${friendName} ga yuborildi!`);
+
+            setTimeout(() => {
+                closeWebApp();
+            }, 1500);
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        function closeWebApp() {
+            tg.sendData(JSON.stringify({
+                action: 'close_webapp',
+                user_id: userId,
+                room_code: roomCode
+            }));
+
+            setTimeout(() => {
+                tg.close();
+            }, 100);
+        }
+
+        function showGame() {
+            const app = document.getElementById('app');
+            const aiInfo = aiLevels[aiLevel] || aiLevels[1];
+
+            let opponentName = '';
+            if (mode === 'ai') {
+                opponentName = `AI ${aiInfo.icon} ${aiInfo.name}`;
+            } else if (playerRole === 'host') {
+                opponentName = 'Kutilyapti...';
+            } else {
+                opponentName = 'Do\'st';
+            }
+
+            app.innerHTML = `
+                <div class="game-container">
+                    <div class="game-title">${gameType === 'checkers' ? '🎯 SHAHKA' : '♟️ SHAXMAT'}</div>
+
+                    ${mode === 'ai' ? `
+                        <div class="ai-level-info">
+                            <div>
+                                <span class="ai-level-badge" style="background: ${aiInfo.color}">
+                                    ${aiInfo.icon} ${aiInfo.name}
+                                </span>
+                                <div class="ai-level-desc">${aiInfo.desc}</div>
+                            </div>
+                            <div class="ai-level-name">${aiLevel}/5 daraja</div>
+                        </div>
+                    ` : ''}
+
+                    <div class="players-panel">
+                        <div class="player-section">
+                            <span class="player-label">SIZ</span>
+                            <span class="player-name" id="playerName">${userName}</span>
+                            <span class="player-rating" id="playerRating">★ 1200</span>
+                        </div>
+                        <div class="vs-badge">VS</div>
+                        <div class="player-section">
+                            <span class="player-label">RAQIB</span>
+                            <span class="player-name" id="opponentName">${opponentName}</span>
+                            <span class="player-rating" id="opponentRating">
+                                ${mode === 'ai' ? `★ ${aiInfo.rating}` : '★ 1200'}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="board-wrapper">
+                        <div id="board" class="board"></div>
+                    </div>
+
+                    <div id="status" class="status-bar">⚪ Sizning navbatingiz</div>
+
+                    <div class="buttons-panel">
+                        <button class="btn btn-exit" onclick="exitGame()">
+                            <span>🚪</span> Chiqish
+                        </button>
+                        <button class="btn btn-restart" onclick="restartGame()">
+                            <span>🔄</span> Qayta boshlash
+                        </button>
+                    </div>
+                </div>
+
+                <div id="winnerModal" class="winner-modal">
+                    <div class="winner-content">
+                        <h2>🏆 G'OLIB</h2>
+                        <p id="winnerName">O'yinchi</p>
+                        <div class="winner-buttons">
+                            <button class="winner-btn restart" onclick="restartGameAfterWin()">🔄 Qayta</button>
+                            <button class="winner-btn exit" onclick="exitGame()">🚪 Chiqish</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            initGame();
+        }
+
+        function exitGame() {
+            if (!gameActive && winner) {
+                const isWinner = (winner === userName);
+                tg.sendData(JSON.stringify({
+                    action: 'game_over',
+                    user_id: userId,
+                    winner_id: isWinner ? userId : null,
+                    game_type: gameType,
+                    ai_level: mode === 'ai' ? aiLevel : null,
+                    room_code: roomCode
+                }));
+            }
+
+            closeWebApp();
+        }
+
+        // ==================== O'YIN LOGIKASI ====================
         let board = [];
         let currentPlayer = 1;
         let selectedPiece = null;
         let validMoves = [];
         let gameActive = true;
         let aiThinking = false;
-        let mustCapturePieces = [];
-        let gameWinner = null;
+        let winner = null;
 
-        // DOM elementlar
-        const boardElement = document.getElementById('board');
-        const statusElement = document.getElementById('status');
-        const winnerModal = document.getElementById('winnerModal');
-        const winnerName = document.getElementById('winnerName');
-
-        // O'yinchi ma'lumotlarini o'rnatish
-        document.getElementById('playerName').textContent = userName;
-
-        if (mode === 'ai') {
-            document.getElementById('opponentName').textContent = 'AI Bot';
-            document.getElementById('aiInfo').style.display = 'block';
-        } else if (roomCode) {
-            if (playerRole === 'host') {
-                document.getElementById('opponentName').textContent = 'Kutilyapti...';
-            } else {
-                document.getElementById('opponentName').textContent = 'Do\'st';
-            }
-        }
-
-        // Boshlang'ich taxta
         function initBoard() {
             board = [
                 [0,2,0,2,0,2,0,2],
@@ -518,7 +848,19 @@
             ];
         }
 
+        function initGame() {
+            initBoard();
+            renderBoard();
+
+            if (mode === 'ai' && aiLevel >= 4 && Math.random() > 0.5) {
+                setTimeout(makeAIMove, 1000);
+            }
+        }
+
         function renderBoard() {
+            const boardElement = document.getElementById('board');
+            if (!boardElement) return;
+
             boardElement.innerHTML = '';
 
             for (let row = 0; row < 8; row++) {
@@ -543,10 +885,6 @@
                             pieceDiv.classList.add('selected');
                         }
 
-                        if (mustCapturePieces.some(p => p.row === row && p.col === col)) {
-                            pieceDiv.classList.add('must-capture');
-                        }
-
                         if (gameActive && currentPlayer === 1 && isWhite) {
                             pieceDiv.onclick = (e) => {
                                 e.stopPropagation();
@@ -565,48 +903,44 @@
                 }
             }
 
-            showValidMoves();
+            if (selectedPiece && validMoves.length > 0) {
+                showValidMoves();
+            }
+        }
+
+        function selectPiece(row, col) {
+            const allCaptures = getAllCaptures(1);
+            if (allCaptures.length > 0) {
+                const pieceCaptures = allCaptures.filter(m => m.fromRow === row && m.fromCol === col);
+                if (pieceCaptures.length === 0) {
+                    showNotification('⚠️ Avval zarba berishingiz kerak!');
+                    return;
+                }
+                validMoves = pieceCaptures;
+            } else {
+                const moves = getValidMoves(row, col);
+                if (moves.length === 0) return;
+                validMoves = moves;
+            }
+
+            selectedPiece = { row, col };
+            renderBoard();
         }
 
         function showValidMoves() {
-            document.querySelectorAll('.hint').forEach(h => h.remove());
-
-            if (!gameActive || currentPlayer !== 1) return;
-
             validMoves.forEach(move => {
                 const cells = document.querySelectorAll('.cell');
                 const index = move.toRow * 8 + move.toCol;
                 if (cells[index]) {
                     const hint = document.createElement('div');
-                    hint.className = `hint ${move.isCapture ? 'capture-hint' : ''}`;
+                    hint.className = move.isCapture ? 'capture-hint' : 'hint';
                     cells[index].appendChild(hint);
                 }
             });
         }
 
-        function selectPiece(row, col) {
-            if (!gameActive || currentPlayer !== 1) return;
-
-            const piece = board[row][col];
-            if (piece !== 1 && piece !== 3) return;
-
-            if (mustCapturePieces.length > 0) {
-                if (!mustCapturePieces.some(p => p.row === row && p.col === col)) {
-                    return;
-                }
-            }
-
-            const moves = getValidMoves(row, col);
-
-            if (moves.length > 0) {
-                selectedPiece = { row, col };
-                validMoves = moves;
-                renderBoard();
-            }
-        }
-
         function handleCellClick(row, col) {
-            if (!selectedPiece || !gameActive || currentPlayer !== 1) return;
+            if (!selectedPiece) return;
 
             const move = validMoves.find(m => m.toRow === row && m.toCol === col);
             if (move) {
@@ -618,40 +952,52 @@
             }
         }
 
+        function getAllCaptures(playerColor) {
+            const captures = [];
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    const piece = board[row][col];
+                    const isWhite = (piece === 1 || piece === 3);
+                    if (piece > 0 && isWhite === (playerColor === 1)) {
+                        const pieceCaptures = findCaptures(row, col, piece, (piece === 3 || piece === 4), isWhite);
+                        captures.push(...pieceCaptures);
+                    }
+                }
+            }
+            return captures;
+        }
+
         function getValidMoves(row, col) {
             const piece = board[row][col];
             if (piece === 0) return [];
 
-            const moves = [];
             const isKing = (piece === 3 || piece === 4);
             const isWhite = (piece === 1 || piece === 3);
 
             const captureMoves = findCaptures(row, col, piece, isKing, isWhite);
 
-            if (captureMoves.length > 0) {
+            const allCaptures = getAllCaptures(isWhite ? 1 : 2);
+            if (allCaptures.length > 0) {
                 return captureMoves;
             }
 
-            if (mustCapturePieces.length === 0) {
-                const directions = isKing ? [[-1,-1], [-1,1], [1,-1], [1,1]]
-                                        : (isWhite ? [[-1,-1], [-1,1]] : [[1,-1], [1,1]]);
+            const moves = [];
+            const directions = isKing ? [[-1,-1], [-1,1], [1,-1], [1,1]]
+                                    : (isWhite ? [[-1,-1], [-1,1]] : [[1,-1], [1,1]]);
 
-                for (const [dr, dc] of directions) {
-                    const newRow = row + dr;
-                    const newCol = col + dc;
+            for (const [dr, dc] of directions) {
+                const newRow = row + dr;
+                const newCol = col + dc;
 
-                    if (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8) {
-                        if (board[newRow][newCol] === 0) {
-                            moves.push({
-                                fromRow: row,
-                                fromCol: col,
-                                toRow: newRow,
-                                toCol: newCol,
-                                isCapture: false,
-                                capturedRow: null,
-                                capturedCol: null
-                            });
-                        }
+                if (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8) {
+                    if (board[newRow][newCol] === 0) {
+                        moves.push({
+                            fromRow: row,
+                            fromCol: col,
+                            toRow: newRow,
+                            toCol: newCol,
+                            isCapture: false
+                        });
                     }
                 }
             }
@@ -665,33 +1011,36 @@
 
             for (const [dr, dc] of directions) {
                 if (isKing) {
-                    let distance = 1;
+                    let step = 1;
                     while (true) {
-                        const midRow = row + dr * distance;
-                        const midCol = col + dc * distance;
-                        const jumpRow = row + dr * (distance + 1);
-                        const jumpCol = col + dc * (distance + 1);
+                        const midRow = row + dr * step;
+                        const midCol = col + dc * step;
+                        const jumpRow = row + dr * (step + 1);
+                        const jumpCol = col + dc * (step + 1);
 
                         if (jumpRow < 0 || jumpRow >= 8 || jumpCol < 0 || jumpCol >= 8) break;
 
                         const midPiece = board[midRow]?.[midCol];
                         const jumpCell = board[jumpRow]?.[jumpCol];
 
-                        if (midPiece > 0 && midPiece % 2 !== piece % 2 && jumpCell === 0) {
-                            captures.push({
-                                fromRow: row,
-                                fromCol: col,
-                                toRow: jumpRow,
-                                toCol: jumpCol,
-                                isCapture: true,
-                                capturedRow: midRow,
-                                capturedCol: midCol
-                            });
-                            break;
+                        if (midPiece > 0 && jumpCell === 0) {
+                            const isMidWhite = (midPiece === 1 || midPiece === 3);
+                            if (isWhite !== isMidWhite) {
+                                captures.push({
+                                    fromRow: row,
+                                    fromCol: col,
+                                    toRow: jumpRow,
+                                    toCol: jumpCol,
+                                    isCapture: true,
+                                    capturedRow: midRow,
+                                    capturedCol: midCol
+                                });
+                                break;
+                            }
                         }
 
                         if (midPiece !== 0) break;
-                        distance++;
+                        step++;
                     }
                 } else {
                     const midRow = row + dr;
@@ -703,16 +1052,19 @@
                         const midPiece = board[midRow]?.[midCol];
                         const jumpCell = board[jumpRow]?.[jumpCol];
 
-                        if (midPiece > 0 && midPiece % 2 !== piece % 2 && jumpCell === 0) {
-                            captures.push({
-                                fromRow: row,
-                                fromCol: col,
-                                toRow: jumpRow,
-                                toCol: jumpCol,
-                                isCapture: true,
-                                capturedRow: midRow,
-                                capturedCol: midCol
-                            });
+                        if (midPiece > 0 && jumpCell === 0) {
+                            const isMidWhite = (midPiece === 1 || midPiece === 3);
+                            if (isWhite !== isMidWhite) {
+                                captures.push({
+                                    fromRow: row,
+                                    fromCol: col,
+                                    toRow: jumpRow,
+                                    toCol: jumpCol,
+                                    isCapture: true,
+                                    capturedRow: midRow,
+                                    capturedCol: midCol
+                                });
+                            }
                         }
                     }
                 }
@@ -729,21 +1081,11 @@
 
             if (move.isCapture) {
                 board[move.capturedRow][move.capturedCol] = 0;
-            }
 
-            if (piece === 1 && move.toRow === 0) {
-                board[move.toRow][move.toCol] = 3;
-            } else if (piece === 2 && move.toRow === 7) {
-                board[move.toRow][move.toCol] = 4;
-            }
-
-            if (move.isCapture) {
                 const nextCaptures = findCaptures(
-                    move.toRow,
-                    move.toCol,
-                    board[move.toRow][move.toCol],
-                    board[move.toRow][move.toCol] === 3 || board[move.toRow][move.toCol] === 4,
-                    board[move.toRow][move.toCol] === 1 || board[move.toRow][move.toCol] === 3
+                    move.toRow, move.toCol, piece,
+                    (piece === 3 || piece === 4),
+                    (piece === 1 || piece === 3)
                 );
 
                 if (nextCaptures.length > 0) {
@@ -754,143 +1096,179 @@
                 }
             }
 
+            if (piece === 1 && move.toRow === 0) {
+                board[move.toRow][move.toCol] = 3;
+            } else if (piece === 2 && move.toRow === 7) {
+                board[move.toRow][move.toCol] = 4;
+            }
+
             currentPlayer = currentPlayer === 1 ? 2 : 1;
             selectedPiece = null;
             validMoves = [];
 
-            checkMustCapture();
             checkGameOver();
-
             renderBoard();
             updateStatus();
 
-            if (mode === 'ai' && currentPlayer === 2 && gameActive) {
-                setTimeout(makeAIMove, 500);
+            if (mode === 'ai') {
+                saveGameState();
             }
-        }
 
-        function checkMustCapture() {
-            mustCapturePieces = [];
-
-            if (currentPlayer === 1) {
-                for (let row = 0; row < 8; row++) {
-                    for (let col = 0; col < 8; col++) {
-                        const piece = board[row][col];
-                        if (piece === 1 || piece === 3) {
-                            const captures = findCaptures(row, col, piece, piece === 3, true);
-                            if (captures.length > 0) {
-                                mustCapturePieces.push({ row, col });
-                            }
-                        }
-                    }
-                }
+            if (mode === 'ai' && currentPlayer === 2 && gameActive) {
+                setTimeout(makeAIMove, 500 + (aiLevel * 100));
             }
         }
 
         function makeAIMove() {
-            if (!gameActive || currentPlayer !== 2) return;
-
+            if (aiThinking || !gameActive) return;
             aiThinking = true;
-            updateStatus();
 
-            setTimeout(() => {
-                const blackPieces = [];
-                for (let row = 0; row < 8; row++) {
-                    for (let col = 0; col < 8; col++) {
-                        const piece = board[row][col];
-                        if (piece === 2 || piece === 4) {
-                            blackPieces.push({ row, col, piece });
+            const aiPieces = [];
+            const aiCaptures = [];
+
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    const piece = board[row][col];
+                    if (piece === 2 || piece === 4) {
+                        const moves = getValidMoves(row, col);
+                        if (moves.length > 0) {
+                            const captures = moves.filter(m => m.isCapture);
+                            if (captures.length > 0) {
+                                aiCaptures.push(...captures);
+                            } else {
+                                aiPieces.push(...moves);
+                            }
                         }
                     }
                 }
+            }
 
-                let allMoves = [];
-                for (const p of blackPieces) {
-                    const moves = getValidMovesForAI(p.row, p.col);
-                    allMoves = allMoves.concat(moves);
-                }
+            let selectedMove = null;
 
-                if (allMoves.length > 0) {
-                    const captureMoves = allMoves.filter(m => m.isCapture);
-                    let selectedMove;
+            if (aiCaptures.length > 0) {
+                switch(aiLevel) {
+                    case 1:
+                        selectedMove = aiCaptures[Math.floor(Math.random() * aiCaptures.length)];
+                        break;
 
-                    if (captureMoves.length > 0) {
-                        selectedMove = captureMoves[Math.floor(Math.random() * captureMoves.length)];
-                        makeMove(selectedMove);
+                    case 2:
+                        selectedMove = aiCaptures.reduce((best, move) => {
+                            const piece = board[move.toRow][move.toCol];
+                            const nextCaptures = findCaptures(
+                                move.toRow, move.toCol, piece,
+                                (piece === 4), false
+                            ).length;
+                            return nextCaptures > (best.nextCaptures || 0) ?
+                                   {...move, nextCaptures} : best;
+                        }, {nextCaptures: -1});
+                        break;
 
-                        setTimeout(() => {
-                            if (gameActive && currentPlayer === 2) {
-                                checkAIContinueCapture(selectedMove.toRow, selectedMove.toCol);
+                    case 3:
+                        selectedMove = aiCaptures.reduce((best, move) => {
+                            let score = 0;
+                            if (move.toRow === 0) score += 10;
+                            const piece = board[move.toRow][move.toCol];
+                            const nextCaptures = findCaptures(
+                                move.toRow, move.toCol, piece,
+                                (piece === 4), false
+                            ).length;
+                            score += nextCaptures * 5;
+                            return score > (best.score || 0) ? {...move, score} : best;
+                        }, {score: -1});
+                        break;
+
+                    case 4:
+                    case 5:
+                        selectedMove = aiCaptures.reduce((best, move) => {
+                            let score = 0;
+                            const centerDist = Math.abs(move.toCol - 3.5);
+                            score += (4 - centerDist) * 2;
+                            if (move.toRow === 0) score += 15;
+                            const piece = board[move.toRow][move.toCol];
+                            const nextCaptures = findCaptures(
+                                move.toRow, move.toCol, piece,
+                                (piece === 4), false
+                            ).length;
+                            score += nextCaptures * 8;
+                            for (let r = 0; r < 8; r++) {
+                                for (let c = 0; c < 8; c++) {
+                                    if (board[r][c] === 1 || board[r][c] === 3) {
+                                        const dist = Math.abs(move.toRow - r) + Math.abs(move.toCol - c);
+                                        if (dist <= 2) score += 3;
+                                    }
+                                }
                             }
-                        }, 300);
-                    } else {
-                        selectedMove = allMoves[Math.floor(Math.random() * allMoves.length)];
-                        makeMove(selectedMove);
-                    }
-                } else {
-                    gameActive = false;
-                    gameWinner = userName;
-                    showWinner(userName);
+                            return score > (best.score || 0) ? {...move, score} : best;
+                        }, {score: -1});
+                        break;
                 }
+            } else if (aiPieces.length > 0) {
+                switch(aiLevel) {
+                    case 1:
+                    case 2:
+                        selectedMove = aiPieces[Math.floor(Math.random() * aiPieces.length)];
+                        break;
 
-                aiThinking = false;
-                updateStatus();
-            }, 500);
-        }
+                    case 3:
+                        selectedMove = aiPieces.reduce((best, move) => {
+                            const centerDist = Math.abs(move.toCol - 3.5);
+                            const score = 4 - centerDist;
+                            return score > (best.score || 0) ? {...move, score} : best;
+                        }, {score: -1});
+                        break;
 
-        function getValidMovesForAI(row, col) {
-            const piece = board[row][col];
-            if (piece === 0) return [];
+                    case 4:
+                        selectedMove = aiPieces.reduce((best, move) => {
+                            let score = 0;
+                            if (move.toRow > 4) score += 3;
+                            const centerDist = Math.abs(move.toCol - 3.5);
+                            score += (4 - centerDist);
+                            for (const [dr, dc] of [[-1,-1], [-1,1], [1,-1], [1,1]]) {
+                                const nr = move.toRow + dr;
+                                const nc = move.toCol + dc;
+                                if (nr >= 0 && nr < 8 && nc >= 0 && nc < 8) {
+                                    if (board[nr][nc] === 2 || board[nr][nc] === 4) {
+                                        score += 2;
+                                    }
+                                }
+                            }
+                            return score > (best.score || 0) ? {...move, score} : best;
+                        }, {score: -1});
+                        break;
 
-            const moves = [];
-            const isKing = (piece === 4);
+                    case 5:
+                        selectedMove = aiPieces.reduce((best, move) => {
+                            let score = 0;
+                            score += 8 - move.toRow;
+                            const centerDist = Math.abs(move.toCol - 3.5);
+                            score += (4 - centerDist) * 2;
 
-            const captureMoves = findCaptures(row, col, piece, isKing, false);
+                            const tempBoard = JSON.parse(JSON.stringify(board));
+                            tempBoard[move.toRow][move.toCol] = tempBoard[move.fromRow][move.fromCol];
+                            tempBoard[move.fromRow][move.fromCol] = 0;
 
-            if (captureMoves.length > 0) {
-                return captureMoves;
-            }
+                            const futureCaptures = findCaptures(
+                                move.toRow, move.toCol,
+                                tempBoard[move.toRow][move.toCol],
+                                (tempBoard[move.toRow][move.toCol] === 4), false
+                            );
+                            score += futureCaptures.length * 5;
 
-            const directions = isKing ? [[-1,-1], [-1,1], [1,-1], [1,1]] : [[1,-1], [1,1]];
-
-            for (const [dr, dc] of directions) {
-                const newRow = row + dr;
-                const newCol = col + dc;
-
-                if (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8) {
-                    if (board[newRow][newCol] === 0) {
-                        moves.push({
-                            fromRow: row,
-                            fromCol: col,
-                            toRow: newRow,
-                            toCol: newCol,
-                            isCapture: false,
-                            capturedRow: null,
-                            capturedCol: null
-                        });
-                    }
+                            return score > (best.score || 0) ? {...move, score} : best;
+                        }, {score: -1});
+                        break;
                 }
             }
 
-            return moves;
-        }
-
-        function checkAIContinueCapture(row, col) {
-            const piece = board[row][col];
-            if (!piece) return;
-
-            const nextCaptures = findCaptures(row, col, piece, piece === 4, false);
-
-            if (nextCaptures.length > 0 && gameActive && currentPlayer === 2) {
-                setTimeout(() => {
-                    const move = nextCaptures[0];
-                    makeMove(move);
-
-                    setTimeout(() => {
-                        checkAIContinueCapture(move.toRow, move.toCol);
-                    }, 300);
-                }, 300);
+            if (selectedMove) {
+                makeMove(selectedMove);
+            } else {
+                gameActive = false;
+                winner = userName;
+                showWinner(userName);
             }
+
+            aiThinking = false;
         }
 
         function checkGameOver() {
@@ -904,61 +1282,42 @@
                     const piece = board[row][col];
                     if (piece === 1 || piece === 3) {
                         whiteExists = true;
-                        if (getValidMoves(row, col).length > 0) whiteMoves = true;
-                    } else if (piece === 2 || piece === 4) {
+                        if (getValidMoves(row, col).length > 0) {
+                            whiteMoves = true;
+                        }
+                    }
+                    if (piece === 2 || piece === 4) {
                         blackExists = true;
-                        if (getValidMovesForAI(row, col).length > 0) blackMoves = true;
+                        if (getValidMoves(row, col).length > 0) {
+                            blackMoves = true;
+                        }
                     }
                 }
             }
 
-            if (!whiteExists || !whiteMoves) {
+            if (!whiteExists || (whiteExists && !whiteMoves)) {
                 gameActive = false;
-                gameWinner = 'AI Bot';
-                showWinner('AI Bot');
-
-                tg.sendData(JSON.stringify({
-                    action: 'game_over',
-                    user_id: userId,
-                    winner_id: 'ai',
-                    game_type: 'checkers'
-                }));
-            } else if (!blackExists || !blackMoves) {
+                winner = mode === 'ai' ? 'AI' : (playerRole === 'host' ? 'Mehmon' : 'Xona egasi');
+                showWinner(winner);
+            } else if (!blackExists || (blackExists && !blackMoves)) {
                 gameActive = false;
-                gameWinner = userName;
+                winner = userName;
                 showWinner(userName);
-
-                tg.sendData(JSON.stringify({
-                    action: 'game_over',
-                    user_id: userId,
-                    winner_id: userId,
-                    game_type: 'checkers'
-                }));
             }
         }
 
-        function showWinner(winner) {
-            winnerName.textContent = winner;
-            winnerModal.style.display = 'flex';
-        }
-
-        function closeWinnerModal() {
-            winnerModal.style.display = 'none';
-        }
-
-        function restartGameAfterWin() {
-            winnerModal.style.display = 'none';
-            restartGame();
-        }
-
         function updateStatus() {
+            const statusElement = document.getElementById('status');
+            if (!statusElement) return;
+
             if (!gameActive) return;
 
             if (mode === 'ai') {
                 if (currentPlayer === 1) {
                     statusElement.innerHTML = "⚪ Sizning navbatingiz";
                 } else {
-                    statusElement.innerHTML = aiThinking ? "⚫ AI o'ylamoqda..." : "⚫ AI navbati";
+                    const aiInfo = aiLevels[aiLevel];
+                    statusElement.innerHTML = `⚫ ${aiInfo.icon} AI navbati (${aiInfo.name})`;
                 }
             } else {
                 if (currentPlayer === 1) {
@@ -969,16 +1328,35 @@
             }
         }
 
-        function showExitConfirm() {
-            document.getElementById('exitModal').style.display = 'block';
+        function showWinner(winnerName) {
+            const modal = document.getElementById('winnerModal');
+            const nameElement = document.getElementById('winnerName');
+            if (modal && nameElement) {
+                nameElement.textContent = winnerName;
+                modal.style.display = 'flex';
+
+                const isWinner = (winnerName === userName);
+                tg.sendData(JSON.stringify({
+                    action: 'game_over',
+                    user_id: userId,
+                    winner_id: isWinner ? userId : null,
+                    game_type: gameType,
+                    ai_level: mode === 'ai' ? aiLevel : null,
+                    room_code: roomCode
+                }));
+            }
         }
 
-        function closeExitModal() {
-            document.getElementById('exitModal').style.display = 'none';
+        function closeWinnerModal() {
+            const modal = document.getElementById('winnerModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
         }
 
-        function confirmExit() {
-            tg.close();
+        function restartGameAfterWin() {
+            closeWinnerModal();
+            restartGame();
         }
 
         function restartGame() {
@@ -988,14 +1366,12 @@
             validMoves = [];
             gameActive = true;
             aiThinking = false;
-            mustCapturePieces = [];
-            gameWinner = null;
+            winner = null;
             renderBoard();
             updateStatus();
-        }
 
-        initBoard();
-        renderBoard();
+            localStorage.removeItem(`currentGame_${gameType}_${mode}_${aiLevel}`);
+        }
     </script>
 </body>
 </html>
